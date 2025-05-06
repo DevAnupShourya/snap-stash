@@ -3,25 +3,26 @@ import { Link } from "@tanstack/react-router";
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { Navbar } from "@/components/navbar";
 
-
 export const Route = createRootRoute({
   component: () => (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col h-screen container mx-auto max-w-7xl custom-font">
       <Navbar />
-      <main className="container mx-auto max-w-7xl px-6 flex-grow pt-16">
+      <main className="flex-grow grid place-items-center">
         <Outlet />
       </main>
-      <footer className="w-full flex items-center justify-center py-3">
-        <LinkComp
-          as={Link}
-          isExternal
-          className="flex items-center gap-1 text-current"
-          to={"https://heroui.com" as any}
-          title="heroui.com homepage"
-        >
+      <footer className="w-full py-4">
+        <p className="flex items-center justify-center gap-2">
           <span className="text-default-600">Powered by</span>
-          <p className="text-primary">HeroUI</p>
-        </LinkComp>
+          <LinkComp
+            as={Link}
+            isExternal
+            className="flex items-center gap-1 text-current"
+            to="https://cloudflare.com"
+            title="cloudflare.com homepage"
+          >
+            <span className="text-primary">Cloudflare Pages</span>
+          </LinkComp>
+        </p>
       </footer>
     </div>
   ),

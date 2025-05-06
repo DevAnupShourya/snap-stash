@@ -1,52 +1,22 @@
-import { Button } from "@heroui/button";
-import { Kbd } from "@heroui/kbd";
-import { Link as LinkComp } from "@heroui/react";
-import { Link } from "@tanstack/react-router";
-import { Input } from "@heroui/input";
 import {
+  Button,
+  Link as LinkComp,
   Navbar as HeroUINavbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
-  NavbarMenuToggle,
-  NavbarMenu,
-  NavbarMenuItem,
-} from "@heroui/navbar";
-import { link as linkStyles } from "@heroui/theme";
-import clsx from "clsx";
-
-import { siteConfig } from "@/config/site";
+  User
+} from "@heroui/react";
+import { Link } from "@tanstack/react-router";
 import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  TwitterIcon,
-  GithubIcon,
-  DiscordIcon,
-  HeartFilledIcon,
-  SearchIcon,
-} from "@/components/icons";
+import { RegisterIcon } from "@/components/icons";
 import { Logo } from "@/components/icons";
+import { selectIsAuthenticated, selectUser } from '@/store/userSlice'
+import { useAppSelector } from '@/store/hooks'
 
 export const Navbar = () => {
-  const searchInput = (
-    <Input
-      aria-label="Search"
-      classNames={{
-        inputWrapper: "bg-default-100",
-        input: "text-sm",
-      }}
-      endContent={
-        <Kbd className="hidden lg:inline-block" keys={["command"]}>
-          K
-        </Kbd>
-      }
-      labelPlacement="outside"
-      placeholder="Search..."
-      startContent={
-        <SearchIcon className="text-base text-default-400 pointer-events-none flex-shrink-0" />
-      }
-      type="search"
-    />
-  );
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const user = useAppSelector(selectUser);
 
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
@@ -54,96 +24,48 @@ export const Navbar = () => {
         <NavbarBrand className="gap-3 max-w-fit">
           <LinkComp
             as={Link}
-            className="flex justify-start items-center gap-1"
+            className="flex justify-start items-center gap-2"
             color="foreground"
             to="/"
           >
             <Logo />
-            <p className="font-bold text-inherit">ACME</p>
+            <p className="font-bold text-inherit text-xl">SnapStash</p>
           </LinkComp>
         </NavbarBrand>
-        <div className="hidden lg:flex gap-4 justify-start ml-2">
-          {siteConfig.navItems.map((item) => (
-            <NavbarItem key={item.href}>
-              <LinkComp
-                as={Link}
-                className={clsx(
-                  linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium"
-                )}
-                color="foreground"
-                to={item.href}
-              >
-                {item.label}
-              </LinkComp>
-            </NavbarItem>
-          ))}
-        </div>
       </NavbarContent>
 
       <NavbarContent
-        className="hidden sm:flex basis-1/5 sm:basis-full"
+        className="flex basis-1/5 sm:basis-full"
         justify="end"
       >
-        <NavbarItem className="hidden sm:flex gap-2">
-          <LinkComp
-            as={Link} isExternal to={siteConfig.links.twitter} title="Twitter">
-            <TwitterIcon className="text-default-500" />
-          </LinkComp>
-          <LinkComp
-            as={Link} isExternal to={siteConfig.links.discord} title="Discord">
-            <DiscordIcon className="text-default-500" />
-          </LinkComp>
-          <LinkComp
-            as={Link} isExternal to={siteConfig.links.github} title="GitHub">
-            <GithubIcon className="text-default-500" />
-          </LinkComp>
+        <NavbarItem className="flex gap-4 sm:gap-8">
           <ThemeSwitch />
-        </NavbarItem>
-        <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem>
-        <NavbarItem className="hidden md:flex">
-          <Button
-            className="text-sm font-normal text-default-600 bg-default-100"
-            startContent={<HeartFilledIcon className="text-danger" />}
-            variant="flat"
-          >
-            Sponsor
-          </Button>
+          {isAuthenticated ? (
+            <User
+              avatarProps={{
+                src: user.profile_image || '',
+                isBordered: true,
+              }}
+              description={user.email}
+              name={user.name}
+              classNames={{
+                wrapper:'max-sm:hidden'
+              }}
+            />
+          ) : (
+            <Button
+              as={Link}
+              to="/register"
+              className="text-sm font-normal text-default-600 bg-default-100"
+              startContent={<RegisterIcon />}
+              variant="flat"
+              color="primary"
+            >
+              Register
+            </Button>
+          )}
         </NavbarItem>
       </NavbarContent>
-
-      <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <LinkComp
-          as={Link} isExternal to={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </LinkComp>
-        <ThemeSwitch />
-        <NavbarMenuToggle />
-      </NavbarContent>
-
-      <NavbarMenu>
-        {searchInput}
-        <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
-              <LinkComp
-                as={Link}
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                }
-                to="#"
-                size="lg"
-              >
-                {item.label}
-              </LinkComp>
-            </NavbarMenuItem>
-          ))}
-        </div>
-      </NavbarMenu>
     </HeroUINavbar>
   );
 };

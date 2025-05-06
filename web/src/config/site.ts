@@ -1,8 +1,8 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Vite + HeroUI",
-  description: "Make beautiful websites regardless of your design experience.",
+  name: "SnapStash",
+  description: "A fast, private, minimal web app to stash personal content (videos, notes, links, files) across devices with instant, passwordless login.",
   navItems: [
     {
       label: "Home",
