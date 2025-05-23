@@ -9,9 +9,12 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",
-    "hono": "^4.7.8"
+    "dotenv": "16.5.0",
+    "hono": "^4.7.8",
+    "mongoose": "^8.15.0"
   },
   "devDependencies": {
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^20.11.17",
     "tsx": "^4.7.1",
     "typescript": "^5.8.3"

@@ -11,34 +11,27 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as RegisterImport } from './routes/register'
-import { Route as DashboardImport } from './routes/dashboard'
-import { Route as AboutImport } from './routes/about'
 import { Route as IndexImport } from './routes/index'
+import { Route as CategoriesIndexImport } from './routes/categories/index'
+import { Route as CategoriesCategoryIdImport } from './routes/categories/$categoryId'
 
 // Create/Update Routes
-
-const RegisterRoute = RegisterImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DashboardRoute = DashboardImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AboutRoute = AboutImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const CategoriesIndexRoute = CategoriesIndexImport.update({
+  id: '/categories/',
+  path: '/categories/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const CategoriesCategoryIdRoute = CategoriesCategoryIdImport.update({
+  id: '/categories/$categoryId',
+  path: '/categories/$categoryId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -53,25 +46,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
+    '/categories/$categoryId': {
+      id: '/categories/$categoryId'
+      path: '/categories/$categoryId'
+      fullPath: '/categories/$categoryId'
+      preLoaderRoute: typeof CategoriesCategoryIdImport
       parentRoute: typeof rootRoute
     }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardImport
-      parentRoute: typeof rootRoute
-    }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterImport
+    '/categories/': {
+      id: '/categories/'
+      path: '/categories'
+      fullPath: '/categories'
+      preLoaderRoute: typeof CategoriesIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -81,47 +67,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/dashboard': typeof DashboardRoute
-  '/register': typeof RegisterRoute
+  '/categories/$categoryId': typeof CategoriesCategoryIdRoute
+  '/categories': typeof CategoriesIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/dashboard': typeof DashboardRoute
-  '/register': typeof RegisterRoute
+  '/categories/$categoryId': typeof CategoriesCategoryIdRoute
+  '/categories': typeof CategoriesIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
-  '/dashboard': typeof DashboardRoute
-  '/register': typeof RegisterRoute
+  '/categories/$categoryId': typeof CategoriesCategoryIdRoute
+  '/categories/': typeof CategoriesIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/dashboard' | '/register'
+  fullPaths: '/' | '/categories/$categoryId' | '/categories'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/dashboard' | '/register'
-  id: '__root__' | '/' | '/about' | '/dashboard' | '/register'
+  to: '/' | '/categories/$categoryId' | '/categories'
+  id: '__root__' | '/' | '/categories/$categoryId' | '/categories/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
-  DashboardRoute: typeof DashboardRoute
-  RegisterRoute: typeof RegisterRoute
+  CategoriesCategoryIdRoute: typeof CategoriesCategoryIdRoute
+  CategoriesIndexRoute: typeof CategoriesIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
-  DashboardRoute: DashboardRoute,
-  RegisterRoute: RegisterRoute,
+  CategoriesCategoryIdRoute: CategoriesCategoryIdRoute,
+  CategoriesIndexRoute: CategoriesIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -135,22 +116,18 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/about",
-        "/dashboard",
-        "/register"
+        "/categories/$categoryId",
+        "/categories/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/about": {
-      "filePath": "about.tsx"
+    "/categories/$categoryId": {
+      "filePath": "categories/$categoryId.tsx"
     },
-    "/dashboard": {
-      "filePath": "dashboard.tsx"
-    },
-    "/register": {
-      "filePath": "register.tsx"
+    "/categories/": {
+      "filePath": "categories/index.tsx"
     }
   }
 }

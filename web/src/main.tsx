@@ -13,18 +13,11 @@ declare module '@tanstack/react-router' {
 // ? After enabling it getting error 
 // import { Provider } from "./provider.tsx";
 import "@/styles/globals.css";
-import { store, persistor } from '@/store';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     {/* <Provider> */}
-    <Provider store={store}>
-      <PersistGate loading={<h1>PersistGate Loader......</h1>} persistor={persistor}>
-        <RouterProvider router={router} />
-      </PersistGate>
-    </Provider>
+    <RouterProvider router={router} />
     {/* </Provider> */}
   </React.StrictMode>,
 );
