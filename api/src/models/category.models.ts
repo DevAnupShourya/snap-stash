@@ -10,5 +10,6 @@ const categorySchema = new Schema(
     },
     { timestamps: true }
 );
+// TODO : when category deletes also delete its tasks
 
 export const CategoryModel = mongoose.models.Category || model("Category", categorySchema);

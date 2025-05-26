@@ -20,6 +20,9 @@ importers:
       mongoose:
         specifier: ^8.15.0
         version: 8.15.0
+      zod:
+        specifier: ^3.25.28
+        version: 3.25.28
     devDependencies:
       '@types/mongoose':
         specifier: ^5.11.97
@@ -332,6 +335,9 @@ packages:
     resolution: {integrity: sha512-De72GdQZzNTUBBChsXueQUnPKDkg/5A5zp7pFDuQAj5UFoENpiACU0wlCvzpAGnTkj++ihpKwKyYewn/XNUbKw==}
     engines: {node: '>=18'}
 
+  zod@3.25.28:
+    resolution: {integrity: sha512-/nt/67WYKnr5by3YS7LroZJbtcCBurDKKPBPWWzaxvVCGuG/NOsiKkrjoOhI8mJ+SQUXEbUzeB3S+6XDUEEj7Q==}
+
 snapshots:
 
   '@esbuild/aix-ppc64@0.25.3':
@@ -560,3 +566,5 @@ snapshots:
     dependencies:
       tr46: 5.1.1
       webidl-conversions: 7.0.0
+
+  zod@3.25.28: {}
