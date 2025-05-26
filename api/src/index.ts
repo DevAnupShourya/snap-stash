@@ -31,7 +31,7 @@ app.onError((err, c) => {
   console.error(`Error on \`${c.req.path}\` : `)
   console.error(err);
 
-  return c.text(`Error! Something wen wrong on url(\`${c.req.path}\`)....`, 404)
+  return c.text(`Error! Something wen wrong on url(\`${c.req.path}\`)....`, 500)
 })
 
 

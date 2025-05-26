@@ -2,23 +2,20 @@ import { Hono } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { validator } from 'hono/validator';
 import { Types } from 'mongoose';
-import { z } from 'zod';
 
 import { TaskModel } from '@/models/task.models.js';
 import { bulkUpdateSchema, createTaskSchema, getTasksQuerySchema, taskParamsSchema, updateTaskSchema } from '@/validators/task.validator.js';
 import { CategoryModel } from '@/models/category.models.js';
+import { genApiResponse } from '@/utils/helper.js';
 
 const taskServer = new Hono()
     // ? Get all tasks with pagination, search, and filtering
     .get(
         '/',
-        validator('query', (value, _) => {
+        validator('query', (value, c) => {
             const result = getTasksQuerySchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid query parameters',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid query parameters', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -64,25 +61,20 @@ const taskServer = new Hono()
                 const hasNextPage = page < totalPages;
                 const hasPrevPage = page > 1;
 
-                return c.json({
-                    success: true,
-                    data: {
-                        tasks,
-                        pagination: {
-                            currentPage: page,
-                            totalPages,
-                            totalCount,
-                            hasNextPage,
-                            hasPrevPage,
-                            limit,
-                        },
+                return c.json(genApiResponse('Tasks', {
+                    tasks,
+                    pagination: {
+                        currentPage: page,
+                        totalPages,
+                        totalCount,
+                        hasNextPage,
+                        hasPrevPage,
+                        limit,
                     },
-                }, 200);
+                }, true), 200);
             } catch (error) {
                 console.error('Error fetching tasks:', error);
-                throw new HTTPException(500, {
-                    message: 'Failed to fetch tasks',
-                });
+                return c.json(genApiResponse('Failed to fetch tasks'), 500);
             }
         }
     )
@@ -90,13 +82,10 @@ const taskServer = new Hono()
     // ? Create a new task
     .post(
         '/',
-        validator('json', (value, _) => {
+        validator('json', (value, c) => {
             const result = createTaskSchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid request body',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid request body', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -112,9 +101,7 @@ const taskServer = new Hono()
                     }).select('_id');
 
                     if (existingCategories.length !== body.category.length) {
-                        throw new HTTPException(400, {
-                            message: 'One or more category IDs are invalid',
-                        });
+                        return c.json(genApiResponse('One or more category IDs are invalid'), 400);
                     }
                 }
 
@@ -138,11 +125,7 @@ const taskServer = new Hono()
                     .populate('category', 'name color icon')
                     .lean();
 
-                return c.json({
-                    success: true,
-                    message: 'Task created successfully',
-                    data: populatedTask,
-                }, 201);
+                return c.json(genApiResponse('Task created successfully', populatedTask, true), 200);
             } catch (error: any) {
                 if (error instanceof HTTPException) {
                     throw error;
@@ -152,15 +135,10 @@ const taskServer = new Hono()
 
                 // * Handle MongoDB validation errors
                 if (error.name === 'ValidationError') {
-                    throw new HTTPException(400, {
-                        message: 'Validation failed',
-                        cause: error.errors,
-                    });
+                    return c.json(genApiResponse('Validation failed', error.errors), 400);
                 }
 
-                throw new HTTPException(500, {
-                    message: 'Failed to create task',
-                });
+                return c.json(genApiResponse('Failed to create task'), 500);
             }
         }
     )
@@ -168,13 +146,10 @@ const taskServer = new Hono()
     // ? Get task by ID
     .get(
         '/:task-id',
-        validator('param', (value, _) => {
+        validator('param', (value, c) => {
             const result = taskParamsSchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid task ID',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid task ID', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -188,19 +163,17 @@ const taskServer = new Hono()
                     .lean();
 
                 if (!task) {
-                    throw new HTTPException(404, {
-                        message: 'Task not found',
-                    });
+                    return c.json(genApiResponse('Task not found'), 404);
                 }
 
-                return c.json({ success: true, data: task }, 200);
+                return c.json(genApiResponse('Task', task, true), 200);
             } catch (error) {
                 if (error instanceof HTTPException) {
                     throw error;
                 }
 
                 console.error('Error fetching task:', error);
-                throw new HTTPException(500, { message: 'Failed to fetch task' });
+                return c.json(genApiResponse('Failed to fetch task'), 500);
             }
         }
     )
@@ -208,23 +181,17 @@ const taskServer = new Hono()
     // Update task by ID
     .put(
         '/:task-id',
-        validator('param', (value, _) => {
+        validator('param', (value, c) => {
             const result = taskParamsSchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid task ID',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid task ID', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
-        validator('json', (value, _) => {
+        validator('json', (value, c) => {
             const result = updateTaskSchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid request body',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid request body', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -236,9 +203,7 @@ const taskServer = new Hono()
                 // * Check if task exists
                 const existingTask = await TaskModel.findById(taskId);
                 if (!existingTask) {
-                    throw new HTTPException(404, {
-                        message: 'Task not found',
-                    });
+                    return c.json(genApiResponse('Task not found'), 404);
                 }
 
                 // * Validate category IDs if provided
@@ -249,9 +214,7 @@ const taskServer = new Hono()
                     }).select('_id');
 
                     if (existingCategories.length !== body.category.length) {
-                        throw new HTTPException(400, {
-                            message: 'One or more category IDs are invalid',
-                        });
+                        return c.json(genApiResponse('One or more category IDs are invalid'), 400);
                     }
                 }
 
@@ -291,11 +254,7 @@ const taskServer = new Hono()
                     .populate('category')
                     .lean();
 
-                return c.json({
-                    success: true,
-                    message: 'Task updated successfully',
-                    data: updatedTask,
-                }, 200);
+                return c.json(genApiResponse('Task updated successfully', updatedTask, true), 200);
             } catch (error: any) {
                 if (error instanceof HTTPException) {
                     throw error;
@@ -305,15 +264,10 @@ const taskServer = new Hono()
 
                 // * Handle MongoDB validation errors
                 if (error.name === 'ValidationError') {
-                    throw new HTTPException(400, {
-                        message: 'Validation failed',
-                        cause: error.errors,
-                    });
+                    return c.json(genApiResponse('Validation failed', error.errors), 400);
                 }
 
-                throw new HTTPException(500, {
-                    message: 'Failed to update task',
-                });
+                return c.json(genApiResponse('Failed to update task'), 500);
             }
         }
     )
@@ -321,13 +275,10 @@ const taskServer = new Hono()
     // ? Delete task by ID
     .delete(
         '/:task-id',
-        validator('param', (value, _) => {
+        validator('param', (value, c) => {
             const result = taskParamsSchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid task ID',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid task ID', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -338,9 +289,7 @@ const taskServer = new Hono()
                 const deletedTask = await TaskModel.findByIdAndDelete(taskId).lean<{ category: string, _id: string, content: string }>();
 
                 if (!deletedTask) {
-                    throw new HTTPException(404, {
-                        message: 'Task not found',
-                    });
+                    return c.json(genApiResponse('Task not found'), 404);
                 }
 
                 // * Remove task from all categories
@@ -351,25 +300,19 @@ const taskServer = new Hono()
                     );
                 }
 
-                return c.json({
-                    success: true,
-                    message: 'Task deleted successfully',
-                    data: {
-                        deletedTask: {
-                            id: deletedTask._id,
-                            content: deletedTask.content,
-                        },
-                    },
-                }, 200);
+                return c.json(genApiResponse('Task deleted successfully', {
+                    deletedTask: {
+                        id: deletedTask._id,
+                        content: deletedTask.content,
+                    }
+                }, true), 200);
             } catch (error) {
                 if (error instanceof HTTPException) {
                     throw error;
                 }
 
                 console.error('Error deleting task:', error);
-                throw new HTTPException(500, {
-                    message: 'Failed to delete task',
-                });
+                return c.json(genApiResponse('Failed to delete task'), 500);
             }
         }
     )
@@ -377,13 +320,10 @@ const taskServer = new Hono()
     // ? Toggle task completion status
     .patch(
         '/:task-id/toggle',
-        validator('param', (value, _) => {
+        validator('param', (value, c) => {
             const result = taskParamsSchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid task ID',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid task ID', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -393,9 +333,7 @@ const taskServer = new Hono()
 
                 const task = await TaskModel.findById(taskId);
                 if (!task) {
-                    throw new HTTPException(404, {
-                        message: 'Task not found',
-                    });
+                    return c.json(genApiResponse('Task not found'), 404);
                 }
 
                 const updatedTask = await TaskModel
@@ -404,23 +342,20 @@ const taskServer = new Hono()
                         { $set: { done: !task.done } },
                         { new: true, runValidators: true }
                     )
-                    .populate('category', 'name color icon')
+                    .populate('category')
                     .lean<{ done: boolean }>();
 
-                return c.json({
-                    success: true,
-                    message: `Task marked as ${updatedTask?.done ? 'completed' : 'pending'}`,
-                    data: updatedTask,
-                }, 200);
+                return c.json(genApiResponse(
+                    `Task marked as ${updatedTask?.done ? 'completed' : 'pending'}`,
+                    updatedTask,
+                    true), 200);
             } catch (error) {
                 if (error instanceof HTTPException) {
                     throw error;
                 }
 
                 console.error('Error toggling task:', error);
-                throw new HTTPException(500, {
-                    message: 'Failed to toggle task status',
-                });
+                return c.json(genApiResponse('Failed to toggle task status'), 500);
             }
         }
     )
@@ -428,13 +363,10 @@ const taskServer = new Hono()
     // ? Bulk update tasks
     .patch(
         '/bulk',
-        validator('json', (value, _) => {
+        validator('json', (value, c) => {
             const result = bulkUpdateSchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid request body',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid request body', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -448,9 +380,7 @@ const taskServer = new Hono()
                 }).select('_id category');
 
                 if (existingTasks.length !== taskIds.length) {
-                    throw new HTTPException(400, {
-                        message: 'One or more task IDs are invalid',
-                    });
+                    return c.json(genApiResponse('One or more task IDs are invalid'), 400);
                 }
 
                 // * Validate category IDs if provided
@@ -461,9 +391,7 @@ const taskServer = new Hono()
                     }).select('_id');
 
                     if (existingCategories.length !== updates.category.length) {
-                        throw new HTTPException(400, {
-                            message: 'One or more category IDs are invalid',
-                        });
+                        return c.json(genApiResponse('One or more category IDs are invalid'), 400);
                     }
                 }
 
@@ -507,23 +435,19 @@ const taskServer = new Hono()
                     .populate('category', 'name color icon')
                     .lean();
 
-                return c.json({
-                    success: true,
-                    message: `${result.modifiedCount} tasks updated successfully`,
-                    data: {
+                return c.json(genApiResponse(
+                    `${result.modifiedCount} tasks updated successfully`,
+                    {
                         modifiedCount: result.modifiedCount,
                         tasks: updatedTasks,
-                    },
-                }, 200);
+                    }, true), 200);
             } catch (error) {
                 if (error instanceof HTTPException) {
                     throw error;
                 }
 
                 console.error('Error bulk updating tasks:', error);
-                throw new HTTPException(500, {
-                    message: 'Failed to bulk update tasks',
-                });
+                return c.json(genApiResponse('Failed to bulk update tasks'), 500);
             }
         }
     )
@@ -563,15 +487,11 @@ const taskServer = new Hono()
                     }
                 ]);
 
-                return c.json({
-                    success: true,
-                    data: stats[0] || { totalTasks: 0, completedTasks: 0, pendingTasks: 0, completionRate: 0 },
-                }, 200);
+                return c.json(genApiResponse('Task Stats',
+                    stats[0] || { totalTasks: 0, completedTasks: 0, pendingTasks: 0, completionRate: 0 }, true), 200);
             } catch (error) {
                 console.error('Error fetching task statistics:', error);
-                throw new HTTPException(500, {
-                    message: 'Failed to fetch task statistics',
-                });
+                return c.json(genApiResponse('Failed to fetch task statistics'), 500);
             }
         }
     );

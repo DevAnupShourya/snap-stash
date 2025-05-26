@@ -2,21 +2,19 @@ import { Hono } from 'hono';
 import { validator } from 'hono/validator';
 import { HTTPException } from 'hono/http-exception';
 
+import { Types } from 'mongoose';
 import { CategoryModel } from '@/models/category.models.js';
 import { getCategoriesQuerySchema, updateCategorySchema, categoryParamsSchema, createCategorySchema } from '@/validators/category.validator.js';
-import { Types } from 'mongoose';
+import { genApiResponse } from '@/utils/helper.js';
 
 const categoryServer = new Hono()
     // ? Get all categories with pagination, search, and sorting
     .get(
         '/',
-        validator('query', (value, _) => {
+        validator('query', (value, c) => {
             const result = getCategoriesQuerySchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid query parameters',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid query parameters', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -57,23 +55,20 @@ const categoryServer = new Hono()
                 const hasNextPage = page < totalPages;
                 const hasPrevPage = page > 1;
 
-                return c.json({
-                    success: true,
-                    data: {
-                        categories,
-                        pagination: {
-                            currentPage: page,
-                            totalPages,
-                            totalCount,
-                            hasNextPage,
-                            hasPrevPage,
-                            limit,
-                        },
+                return c.json(genApiResponse('Done', {
+                    categories,
+                    pagination: {
+                        currentPage: page,
+                        totalPages,
+                        totalCount,
+                        hasNextPage,
+                        hasPrevPage,
+                        limit,
                     },
-                }, 200);
+                }, true), 200);
             } catch (error) {
                 console.error('Error fetching categories:', error);
-                throw new HTTPException(500, { message: 'Failed to fetch categories' });
+                return c.json(genApiResponse('Failed to fetch categories'), 500);
             }
         }
     )
@@ -81,13 +76,10 @@ const categoryServer = new Hono()
     // ? Create a new category
     .post(
         '/',
-        validator('json', (value, _) => {
+        validator('json', (value, c) => {
             const result = createCategorySchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid request body',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid request body', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -101,19 +93,13 @@ const categoryServer = new Hono()
                 });
 
                 if (existingCategory) {
-                    throw new HTTPException(409, {
-                        message: 'Category with this name already exists',
-                    });
+                    return c.json(genApiResponse('Category with this name already exists'), 409);
                 }
 
                 const newCategory = new CategoryModel(body);
                 const savedCategory = await newCategory.save();
 
-                return c.json({
-                    success: true,
-                    message: 'Category created successfully',
-                    data: savedCategory,
-                }, 201);
+                return c.json(genApiResponse('Category created successfully', savedCategory, true), 201);
             } catch (error: any) {
                 if (error instanceof HTTPException) {
                     throw error;
@@ -123,15 +109,10 @@ const categoryServer = new Hono()
 
                 // * Handle MongoDB validation errors
                 if (error.name === 'ValidationError') {
-                    throw new HTTPException(400, {
-                        message: 'Validation failed',
-                        cause: error.errors,
-                    });
+                    return c.json(genApiResponse('Validation failed', error.errors), 400);
                 }
 
-                throw new HTTPException(500, {
-                    message: 'Failed to create category',
-                });
+                return c.json(genApiResponse('Failed to create category'), 500);
             }
         }
     )
@@ -139,13 +120,10 @@ const categoryServer = new Hono()
     // ? Get category by ID
     .get(
         '/:category-id',
-        validator('param', (value, _) => {
+        validator('param', (value, c) => {
             const result = categoryParamsSchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid category ID',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid category ID', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -159,9 +137,7 @@ const categoryServer = new Hono()
                     .lean();
 
                 if (!category) {
-                    throw new HTTPException(404, {
-                        message: 'Category not found',
-                    });
+                    return c.json(genApiResponse('Invalid query parameters'), 400);
                 }
 
                 return c.json({ success: true, data: category }, 200);
@@ -171,7 +147,7 @@ const categoryServer = new Hono()
                 }
 
                 console.error('Error fetching category:', error);
-                throw new HTTPException(500, { message: 'Failed to fetch category' });
+                return c.json(genApiResponse('Failed to fetch category'), 500);
             }
         }
     )
@@ -183,10 +159,7 @@ const categoryServer = new Hono()
         validator('param', (value, c) => {
             const result = categoryParamsSchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid category ID',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse(result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -194,10 +167,7 @@ const categoryServer = new Hono()
         validator('json', (value, c) => {
             const result = updateCategorySchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid request body',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid request body', result.error.issues[0].message), 409);
             }
             return result.data;
         }),
@@ -209,9 +179,7 @@ const categoryServer = new Hono()
                 // * Check if category exists
                 const existingCategory = await CategoryModel.findById(categoryId);
                 if (!existingCategory) {
-                    throw new HTTPException(404, {
-                        message: 'Category not found',
-                    });
+                    return c.json(genApiResponse('Category not found'), 404);
                 }
 
                 // * Check for name conflicts if name is being updated
@@ -222,9 +190,7 @@ const categoryServer = new Hono()
                     });
 
                     if (duplicateCategory) {
-                        throw new HTTPException(409, {
-                            message: 'Category with this name already exists',
-                        });
+                        return c.json(genApiResponse('Category with this name already exists'), 409);
                     }
                 }
 
@@ -237,11 +203,7 @@ const categoryServer = new Hono()
                     .populate('tasks')
                     .lean();
 
-                return c.json({
-                    success: true,
-                    message: 'Category updated successfully',
-                    data: updatedCategory,
-                }, 200);
+                return c.json(genApiResponse('Category updated successfully', updatedCategory, true), 200);
             } catch (error: any) {
                 if (error instanceof HTTPException) {
                     throw error;
@@ -251,15 +213,10 @@ const categoryServer = new Hono()
 
                 // * Handle MongoDB validation errors
                 if (error.name === 'ValidationError') {
-                    throw new HTTPException(400, {
-                        message: 'Validation failed',
-                        cause: error.errors,
-                    });
+                    return c.json(genApiResponse('Validation failed', error.errors), 400);
                 }
 
-                throw new HTTPException(500, {
-                    message: 'Failed to update category',
-                });
+                return c.json(genApiResponse('Failed to update category'), 500);
             }
         }
     )
@@ -270,10 +227,7 @@ const categoryServer = new Hono()
         validator('param', (value, c) => {
             const result = categoryParamsSchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid category ID',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid category ID', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -284,30 +238,21 @@ const categoryServer = new Hono()
                 const deletedCategory = await CategoryModel.findByIdAndDelete(categoryId).lean<{ _id: string, name: string }>();
 
                 if (!deletedCategory) {
-                    throw new HTTPException(404, {
-                        message: 'Category not found',
-                    });
+                    return c.json(genApiResponse('Category not found'), 404);
                 };
 
-                return c.json({
-                    success: true,
-                    message: 'Category deleted successfully',
-                    data: {
-                        deletedCategory: {
-                            id: deletedCategory._id,
-                            name: deletedCategory.name,
-                        },
+                return c.json(genApiResponse('Category deleted successfully', {
+                    deletedCategory: {
+                        id: deletedCategory._id,
+                        name: deletedCategory.name,
                     },
-                }, 200);
+                }, true), 200);
             } catch (error) {
                 if (error instanceof HTTPException) {
                     throw error;
                 }
-
                 console.error('Error deleting category:', error);
-                throw new HTTPException(500, {
-                    message: 'Failed to delete category',
-                });
+                return c.json(genApiResponse('Failed to delete category'), 500);
             }
         }
     )
@@ -315,13 +260,10 @@ const categoryServer = new Hono()
     // ? Get category statistics
     .get(
         '/:category-id/stats',
-        validator('param', (value, _) => {
+        validator('param', (value, c) => {
             const result = categoryParamsSchema.safeParse(value);
             if (!result.success) {
-                throw new HTTPException(400, {
-                    message: 'Invalid category ID',
-                    cause: result.error.flatten(),
-                });
+                return c.json(genApiResponse('Invalid category ID', result.error.issues[0].message), 400);
             }
             return result.data;
         }),
@@ -331,9 +273,7 @@ const categoryServer = new Hono()
 
                 const category = await CategoryModel.findById(categoryId).lean<{ name: string }>();
                 if (!category) {
-                    throw new HTTPException(404, {
-                        message: 'Category not found',
-                    });
+                    return c.json(genApiResponse('Category not found'), 404);
                 }
 
                 const stats = await CategoryModel.aggregate([
@@ -370,19 +310,17 @@ const categoryServer = new Hono()
                     },
                 ]);
 
-                return c.json({
-                    success: true,
-                    data: stats[0] || { name: category.name, totalTasks: 0, completedTasks: 0, pendingTasks: 0 },
-                }, 200);
+                return c.json(genApiResponse(
+                    'Category Stats',
+                    stats[0] || { name: category.name, totalTasks: 0, completedTasks: 0, pendingTasks: 0 },
+                    true), 200);
             } catch (error) {
                 if (error instanceof HTTPException) {
                     throw error;
                 }
 
                 console.error('Error fetching category stats:', error);
-                throw new HTTPException(500, {
-                    message: 'Failed to fetch category statistics',
-                });
+                return c.json(genApiResponse('Failed to fetch category statistics'), 500);
             }
         }
     );
