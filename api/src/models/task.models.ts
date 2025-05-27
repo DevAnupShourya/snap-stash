@@ -4,7 +4,7 @@ const taskSchema = new Schema(
     {
         content: { type: String, required: true },
         done: { type: Boolean, required: true },
-        category: [{ type: Types.ObjectId, ref: "Category" }],
+        categoryId: { type: Types.ObjectId, ref: 'Category', required: true }
     },
     { timestamps: true }
 );

@@ -14,7 +14,6 @@ const PORT = Number(ENV.SERVER_PORT) || 3001;
 
 app.use('*', logger());
 app.use('*', cors());
-connectDB();
 
 app.get('/api/status', (c) => {
   return c.text('All OK. API Running + Database Connected.', 200)
@@ -34,10 +33,10 @@ app.onError((err, c) => {
   return c.text(`Error! Something wen wrong on url(\`${c.req.path}\`)....`, 500)
 })
 
-
+let dbConnection = await connectDB();
 serve({
   fetch: app.fetch,
   port: PORT
 }, (info) => {
-  console.log(`🚀 API is running on http://localhost:${info.port}`)
+  console.log(`API live on http://localhost:${info.port} and db connection ${dbConnection}`)
 })

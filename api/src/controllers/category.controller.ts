@@ -14,7 +14,7 @@ const categoryServer = new Hono()
         validator('query', (value, c) => {
             const result = getCategoriesQuerySchema.safeParse(value);
             if (!result.success) {
-                return c.json(genApiResponse('Invalid query parameters', result.error.issues[0].message), 400);
+                return c.json(genApiResponse('Invalid query parameters', `-- ${result.error.issues[0].path[0]} -- ${result.error.issues[0].message}`), 400);
             }
             return result.data;
         }),
@@ -79,7 +79,7 @@ const categoryServer = new Hono()
         validator('json', (value, c) => {
             const result = createCategorySchema.safeParse(value);
             if (!result.success) {
-                return c.json(genApiResponse('Invalid request body', result.error.issues[0].message), 400);
+                return c.json(genApiResponse('Invalid request body', `-- ${result.error.issues[0].path[0]} -- ${result.error.issues[0].message}`), 400);
             }
             return result.data;
         }),
@@ -123,7 +123,7 @@ const categoryServer = new Hono()
         validator('param', (value, c) => {
             const result = categoryParamsSchema.safeParse(value);
             if (!result.success) {
-                return c.json(genApiResponse('Invalid category ID', result.error.issues[0].message), 400);
+                return c.json(genApiResponse('Invalid category ID', `-- ${result.error.issues[0].path[0]} -- ${result.error.issues[0].message}`), 400);
             }
             return result.data;
         }),
@@ -159,7 +159,7 @@ const categoryServer = new Hono()
         validator('param', (value, c) => {
             const result = categoryParamsSchema.safeParse(value);
             if (!result.success) {
-                return c.json(genApiResponse(result.error.issues[0].message), 400);
+                return c.json(genApiResponse(`-- ${result.error.issues[0].path[0]} -- ${result.error.issues[0].message}`), 400);
             }
             return result.data;
         }),
@@ -167,7 +167,7 @@ const categoryServer = new Hono()
         validator('json', (value, c) => {
             const result = updateCategorySchema.safeParse(value);
             if (!result.success) {
-                return c.json(genApiResponse('Invalid request body', result.error.issues[0].message), 409);
+                return c.json(genApiResponse('Invalid request body', `-- ${result.error.issues[0].path[0]} -- ${result.error.issues[0].message}`), 409);
             }
             return result.data;
         }),
@@ -227,7 +227,7 @@ const categoryServer = new Hono()
         validator('param', (value, c) => {
             const result = categoryParamsSchema.safeParse(value);
             if (!result.success) {
-                return c.json(genApiResponse('Invalid category ID', result.error.issues[0].message), 400);
+                return c.json(genApiResponse('Invalid category ID', `-- ${result.error.issues[0].path[0]} -- ${result.error.issues[0].message}`), 400);
             }
             return result.data;
         }),
@@ -263,7 +263,7 @@ const categoryServer = new Hono()
         validator('param', (value, c) => {
             const result = categoryParamsSchema.safeParse(value);
             if (!result.success) {
-                return c.json(genApiResponse('Invalid category ID', result.error.issues[0].message), 400);
+                return c.json(genApiResponse('Invalid category ID', `-- ${result.error.issues[0].path[0]} -- ${result.error.issues[0].message}`), 400);
             }
             return result.data;
         }),
