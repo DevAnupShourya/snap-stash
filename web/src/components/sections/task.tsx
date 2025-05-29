@@ -1,41 +1,47 @@
-import { Button, Card, CardHeader } from "@heroui/react";
-import { EllipsisVertical, Image } from "lucide-react";
+import { Button, Card, CardHeader, Divider } from "@heroui/react";
+import { Circle, CircleCheck, Pencil, X } from "lucide-react";
+import { Task } from '@/types/task';
 
-type TaskProps = {
-    id: string;
-    content: string;
-};
-
-export default function Task({ id, content }: TaskProps) {
+export default function TaskComponent({ _id, categoryId, content, createdAt, done, updatedAt }: Task) {
     return (
         <Card
-            key={`${id}`}
+            key={_id}
             className="w-full sm:w-11/12 mx-auto bg-content2 hover:bg-content2/80 selection:bg-content2/90 group"
         >
             <CardHeader className="gap-4 justify-between">
                 <main className="flex flex-nowrap gap-4 items-center justify-between">
                     <Button
-                        variant="flat"
-                        color="default"
+                        variant={done ? 'solid' : 'flat'}
+                        color={done ? 'primary' : 'default'}
                         radius="full"
                         size="lg"
                         isIconOnly
                     >
-                        <Image className="size-4" />
+                        {done ? (<CircleCheck className="size-6" />) : (<Circle className="size-6" />)}
                     </Button>
-                    <h1 className="capitalize text-lg font-semibold tracking-wide">task {id}</h1>
+                    <h1 className="capitalize text-lg font-semibold tracking-wide">{content}</h1>
                 </main>
-                <h1 className="text-sm mr-4 opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity">{content}</h1>
-                <Button
-                    variant="light"
-                    color="default"
-                    radius="sm"
-                    size="md"
-                    isIconOnly
-                    className="opacity-100 group-hover:opacity-0 group-hover:hidden transition-opacity"
-                >
-                    <EllipsisVertical className="size-4" />
-                </Button>
+                <aside className="flex flex-nowrap gap-2 items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Divider orientation="vertical" className="h-10 mr-2" />
+                    <Button
+                        variant="light"
+                        color="warning"
+                        radius="sm"
+                        size="md"
+                        isIconOnly
+                    >
+                        <Pencil className="size-4" />
+                    </Button>
+                    <Button
+                        variant="light"
+                        color="danger"
+                        radius="sm"
+                        size="md"
+                        isIconOnly
+                    >
+                        <X className="size-4" />
+                    </Button>
+                </aside>
             </CardHeader>
         </Card>
     )

@@ -18,7 +18,7 @@ export const updateCategorySchema = z.object({
 export const categoryParamsSchema = z.object({
     'category-id': z.string().refine((id) => Types.ObjectId.isValid(id), {
         message: 'Invalid category ID format',
-    }),
+    }).optional(),
 });
 
 // Query schema for filtering and pagination

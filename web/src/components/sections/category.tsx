@@ -2,15 +2,13 @@ import { Button, Card, CardHeader } from "@heroui/react";
 import { Link } from "@tanstack/react-router";
 import { GripVertical, Image, PhoneOutgoing } from "lucide-react";
 
-type CategoryProps = {
-    id: string;
-};
+import { Category } from '@/types/category';
 
-export default function Category({ id }: CategoryProps) {
+export default function CategoryComp({ _id, color, createdAt, icon, name, tasks, updatedAt }: Category) {
     return (
         <Card
             as={Link}
-            to={`${id}`}
+            to={`${_id}`}
             className="w-full sm:w-11/12 mx-auto bg-content2 hover:bg-content2/80 selection:bg-content2/90 group"
         >
             <CardHeader className="gap-4 justify-between">
@@ -25,9 +23,9 @@ export default function Category({ id }: CategoryProps) {
                     >
                         <Image className="size-4" />
                     </Button>
-                    <h1 className="capitalize text-lg font-semibold tracking-wide">Category {id}</h1>
+                    <h1 className="capitalize text-lg font-semibold tracking-wide">{name}</h1>
                 </main>
-                <h1 className="text-sm mr-4 opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity">{id}</h1>
+                <h1 className="text-sm mr-4 opacity-0 hidden group-hover:block group-hover:opacity-100 transition-opacity">{tasks.length}</h1>
                 <Button
                     variant="light"
                     color="default"

@@ -1,8 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 import { routeTree } from './routeTree.gen'
+
 const router = createRouter({ routeTree })
 declare module '@tanstack/react-router' {
   interface Register {
@@ -13,11 +15,23 @@ declare module '@tanstack/react-router' {
 // ? After enabling it getting error 
 // import { Provider } from "./provider.tsx";
 import "@/styles/globals.css";
+import { ToastProvider } from "@heroui/toast";
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchIntervalInBackground: false,
+      refetchOnWindowFocus: false,
+    }
+  }
+})
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     {/* <Provider> */}
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <ToastProvider placement='bottom-center' />
+      <RouterProvider router={router} />
+    </QueryClientProvider>
     {/* </Provider> */}
   </React.StrictMode>,
 );

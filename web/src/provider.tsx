@@ -3,7 +3,6 @@ import type { NavigateOptions, ToOptions } from '@tanstack/react-router';
 import { useRouter } from '@tanstack/react-router';
 import { HeroUIProvider } from "@heroui/react";
 
-
 declare module "@react-types/shared" {
   interface RouterConfig {
     href: ToOptions['to'];

@@ -12,7 +12,12 @@ import { connectDB } from '@/lib/db.js';
 const app = new Hono();
 const PORT = Number(ENV.SERVER_PORT) || 3001;
 
-app.use('*', logger());
+// app.use('*', logger());
+app.use('*', logger((info) => {
+  const timestamp = new Date().toLocaleTimeString();
+  console.log(`[${timestamp}] : ${info}`)
+}))
+
 app.use('*', cors());
 
 app.get('/api/status', (c) => {

@@ -42,8 +42,6 @@ const categoryServer = new Hono()
                 const [categories, totalCount] = await Promise.all([
                     CategoryModel
                         .find(query)
-                        // .populate('tasks', 'content done') // Only include the title and status fields from each task 
-                        .populate('tasks')
                         .sort(sort)
                         .skip(skip)
                         .limit(limit)
@@ -77,6 +75,9 @@ const categoryServer = new Hono()
     .post(
         '/',
         validator('json', (value, c) => {
+            console.log('value')
+            console.log(value)
+            console.log('value')
             const result = createCategorySchema.safeParse(value);
             if (!result.success) {
                 return c.json(genApiResponse('Invalid request body', `-- ${result.error.issues[0].path[0]} -- ${result.error.issues[0].message}`), 400);
