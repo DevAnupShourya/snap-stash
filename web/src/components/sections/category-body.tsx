@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { getAllTasksByCategoryId } from '@/services/task.service';
 
 import {
     CardBody,
+    Pagination,
     ScrollShadow,
     addToast,
 } from "@heroui/react";
@@ -14,9 +15,11 @@ import LoadingContent from '@/components/sections/loader';
 import NothingToShow from '@/components/sections/nothing-to-show';
 
 export default function CategoryBody({ cId }: { cId: string }) {
+    const [page, setPage] = useState(1);
+
     const taskQuery = useQuery({
         queryKey: ['tasks', cId],
-        queryFn: () => getAllTasksByCategoryId(cId),
+        queryFn: () => getAllTasksByCategoryId({ cId, page, limit: 4 }),
     });
 
     useEffect(() => {
@@ -45,6 +48,11 @@ export default function CategoryBody({ cId }: { cId: string }) {
                             )
                         })
                     )
+                )}
+                {!taskQuery.isLoading && taskQuery.isSuccess && (
+                    <div className='grid place-items-center py-6'>
+                        <Pagination color="secondary" page={taskQuery.data.pagination.currentPage} total={taskQuery.data.pagination.totalPages} onChange={setPage} />
+                    </div>
                 )}
                 {!taskQuery.isLoading && taskQuery.isPending && <LoadingContent />}
                 {taskQuery.isError && <SomethingWentWrong />}

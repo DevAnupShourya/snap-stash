@@ -1,4 +1,5 @@
 import http from '@/lib/http';
+import { PaginationParams } from '@/types/category';
 import { GeneralResponseStructure, GetTasksResponse, GetTaskStatsResponseSchema, GetCategoryByIdSchema } from '@/types/response';
 import { HTTPError } from 'ky';
 
@@ -17,9 +18,9 @@ export async function getCategoryByCategoryId(cId: string): Promise<GetCategoryB
     }
 }
 
-export async function getAllTasksByCategoryId(cId: string): Promise<GetTasksResponse> {
+export async function getAllTasksByCategoryId(params: PaginationParams & { cId: string }): Promise<GetTasksResponse> {
     try {
-        const res = await http.get(`task?category=${cId}`).json<{ data: GetTasksResponse }>();
+        const res = await http.get(`task?category=${params.cId}`).json<{ data: GetTasksResponse }>();
         return res.data;
     } catch (error) {
         if (error instanceof HTTPError) {

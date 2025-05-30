@@ -19,6 +19,9 @@ import {
     StarIcon,
     SettingsIcon,
     FolderIcon,
+    CaseSensitive,
+    Calendar,
+    X,
 } from 'lucide-react';
 
 export const Icons = [
@@ -45,3 +48,27 @@ export const Icons = [
 ];
 
 export const Colors = ["default", "secondary", "primary", "success", "warning", "danger"]
+
+
+export const OrderBy = [
+    {
+        key: '',
+        value: 'None',
+        icon: X,
+    },
+    {
+        key: 'name',
+        value: 'Name',
+        icon: CaseSensitive,
+    },
+    {
+        key: 'createdAt',
+        value: 'Created',
+        icon: Calendar,
+    },
+    {
+        key: 'updatedAt',
+        value: 'Updated',
+        icon: CaseSensitive,
+    }
+]

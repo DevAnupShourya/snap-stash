@@ -1,11 +1,19 @@
 import http from '@/lib/http';
-import { CategoryForm } from '@/types/category';
+import { CategoryForm, PaginationParams } from '@/types/category';
 import { GetCategoriesResponse, GeneralResponseStructure } from '@/types/response';
 import { HTTPError } from 'ky';
 
-export async function getCategories(): Promise<GetCategoriesResponse> {
+export async function getCategories(params: PaginationParams): Promise<GetCategoriesResponse> {
     try {
-        const res = await http.get('category').json<{ data: GetCategoriesResponse }>();
+        const res = await http.get('category', {
+            searchParams: {
+                page: params.page,
+                limit: params.limit,
+                ...(params.search && { search: params.search }),
+                ...(params.sortBy && { sortBy: params.sortBy }),
+                ...(params.sortOrder && { sortOrder: params.sortOrder }),
+            }
+        }).json<{ data: GetCategoriesResponse }>();
         return res.data;
     } catch (error) {
         if (error instanceof HTTPError) {
@@ -14,7 +22,7 @@ export async function getCategories(): Promise<GetCategoriesResponse> {
         } else {
             console.error('[getCategories] Unexpected Error:', error);
             throw new Error('Unexpected error occurred');
-        } 
+        }
     }
 }
 

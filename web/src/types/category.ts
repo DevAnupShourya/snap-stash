@@ -13,6 +13,14 @@ export const categorySchema = z.object({
     tasks: z.array(z.string())
 });
 
+export const paginationParamsSchema = z.object({
+    page: z.number().optional().default(1),
+    limit: z.number().optional().default(10),
+    search: z.string().optional().default(''),
+    sortBy: z.enum(['name', 'createdAt', 'updatedAt', '']).optional().default(''),
+    sortOrder: z.enum(['asc', 'desc']).optional().default('asc'),
+});
+
 export const paginationSchema = z.object({
     currentPage: z.number(),
     limit: z.number(),
@@ -22,7 +30,6 @@ export const paginationSchema = z.object({
     hasPrevPage: z.boolean(),
 });
 
-
 export const categoryFormSchema = z.object({
     name: z.string().min(3, 'Name is required').max(64, 'Name must be less than 64 characters'),
     description: z.string().min(5, 'Name is required').max(64, 'Name must be less than 64 characters').optional(),
@@ -30,7 +37,7 @@ export const categoryFormSchema = z.object({
     color: colorNamesSchema, // todo check it should not cause any problem
 });
 
-
 export type Category = z.infer<typeof categorySchema>;
 export type CategoryForm = z.infer<typeof categoryFormSchema>;
 export type Color = z.infer<typeof colorNamesSchema>;
+export type PaginationParams = z.infer<typeof paginationParamsSchema>;

@@ -1,4 +1,4 @@
-import { createFileRoute, notFound, useParams, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useParams, useRouter } from '@tanstack/react-router'
 
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -11,7 +11,7 @@ import {
   Kbd,
   addToast,
 } from "@heroui/react";
-import { ArrowUpToLine, ChevronLeft, Search, Plus, Bolt, X } from 'lucide-react';
+import { ArrowUpToLine, ChevronLeft, Search, Plus, X } from 'lucide-react';
 import CategoryFooter from '@/components/sections/category-footer';
 import CategoryBody from '@/components/sections/category-body';
 import { getCategoryByCategoryId } from '@/services/task.service';
