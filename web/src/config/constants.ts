@@ -22,6 +22,8 @@ import {
     CaseSensitive,
     Calendar,
     X,
+    ListTodo,
+    CalendarSearch,
 } from 'lucide-react';
 
 export const Icons = [
@@ -70,5 +72,33 @@ export const OrderBy = [
         key: 'updatedAt',
         value: 'Updated',
         icon: CaseSensitive,
+    }
+]
+
+export const OrderByTask = [
+    {
+        key: '',
+        value: 'None',
+        icon: X,
+    },
+    {
+        key: 'content',
+        value: 'Text',
+        icon: CaseSensitive,
+    },
+    {
+        key: 'done',
+        value: 'Status',
+        icon: ListTodo,
+    },
+    {
+        key: 'createdAt',
+        value: 'Created',
+        icon: Calendar,
+    },
+    {
+        key: 'updatedAt',
+        value: 'Updated',
+        icon: CalendarSearch,
     }
 ]

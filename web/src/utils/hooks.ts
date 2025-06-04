@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export function useBackToTop(xAxis = 30) {
+export function useBackToTop(xAxis = 10) {
     const [isVisible, setIsVisible] = useState(false);
     const scrollableRef = useRef<HTMLDivElement | null>(null);
 
@@ -23,4 +23,26 @@ export function useBackToTop(xAxis = 30) {
     return { isVisible, scrollableRef, scrollToTop };
 }
 
-// Usage:
+
+export function useCopyToClipboard(txtToCopy: string, resetAfterMs = 3000) {
+    const [isCopied, setIsCopied] = useState(false);
+
+    const copy = useCallback(() => {
+        navigator.clipboard.writeText(txtToCopy)
+            .then(() => setIsCopied(true))
+            .catch((err) => {
+                console.error('Failed to copy!', err);
+            });
+    }, [txtToCopy]);
+
+    useEffect(() => {
+        if (isCopied) {
+            const timer = setTimeout(() => {
+                setIsCopied(false);
+            }, resetAfterMs);
+            return () => clearTimeout(timer);
+        }
+    }, [isCopied, resetAfterMs]);
+
+    return { isCopied, copy };
+}

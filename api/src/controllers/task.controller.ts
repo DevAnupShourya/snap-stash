@@ -46,7 +46,7 @@ const taskServer = new Hono()
                 const [tasks, totalCount] = await Promise.all([
                     TaskModel
                         .find(query)
-                        .populate('categoryId', 'name')
+                        // .populate('categoryId', 'name')
                         .sort(sort)
                         .skip(skip)
                         .limit(limit)

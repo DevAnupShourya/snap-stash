@@ -4,5 +4,5 @@
 export type genApiResParams = {
     success: boolean
     message: string
-    data: null | any
+    payload: null | any
 }

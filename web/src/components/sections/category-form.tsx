@@ -11,75 +11,133 @@ import {
     PopoverContent,
 } from "@heroui/react";
 
-import { CategoryForm, categoryFormSchema } from '@/types/category';
+import { Category, CategoryForm, categoryFormSchema } from '@/validation/category';
 import { Colors, Icons } from '@/config/constants';
 
-import { CornerRightUp } from 'lucide-react';
-import { createCategory } from '@/services/category.service';
+import { CornerRightDown, CornerRightUp } from 'lucide-react';
+import { createCategory, updateCategory } from '@/services/category.service';
 
-
-// Helper function to get color value
+// ? Helper function to get color value
 const getColorValue = (color: string) => {
     const validColors = ['primary', 'secondary', 'success', 'warning', 'danger'];
     return validColors.includes(color) ? color as any : 'default';
 };
 
-export default function CategoryFormComponent() {
+type CategoryFormComponentProps =
+    | {
+        method: 'create'
+    }
+    | {
+        method: 'update'
+        categoryId: string
+    }
+
+export default function CategoryFormComponent(props: CategoryFormComponentProps) {
+    const { method } = props;
     const queryClient = useQueryClient();
 
-    const [categoryForm, setCategoryForm] = useState<CategoryForm>({
-        icon: 'programming',
-        color: 'default',
-        name: ''
-    });
+    // ? Get initial form data based on method
+    const getInitialFormData = (): CategoryForm => {
+        if (method === 'update') {
+            const { categoryId } = props;
+            const data: { payload: Category } = queryClient.getQueryData(['category', categoryId])!;
 
-    const createFormMutation = useMutation({
+            return {
+                icon: data.payload.icon,
+                color: data.payload.color,
+                name: data.payload.name
+            };
+        }
+        return {
+            icon: 'programming',
+            color: 'default',
+            name: ''
+        };
+    };
+
+    const [categoryForm, setCategoryForm] = useState<CategoryForm>(getInitialFormData());
+
+    // ? Create mutation
+    const createMutation = useMutation({
         mutationFn: createCategory,
         onSuccess: (res) => {
-            // ? Reset form after successful creation
             setCategoryForm({
-                icon: 'youtube',
+                icon: 'programming',
                 color: 'default',
                 name: ''
             });
 
-            // ? Tell user
             addToast({
                 variant: 'solid',
                 color: 'success',
                 title: 'Done',
-                description: `${res.message}`
-            })
+                description: res.message
+            });
 
-            // ? Invalidate and refetch categories list
             queryClient.invalidateQueries({ queryKey: ['all-categories'] });
         },
         onError: (e) => {
-            console.error('Failed to create category!!!')
-            console.error(e);
-
+            console.error('Failed to create category:', e);
             addToast({
                 variant: 'solid',
                 color: 'danger',
                 title: 'Error',
-                description: `${e.message}`
-            })
+                description: e.message
+            });
         }
-    })
+    });
+
+    // ? Update mutation
+    const updateMutation = useMutation({
+        mutationFn: updateCategory,
+        onSuccess: (res) => {
+            addToast({
+                variant: 'solid',
+                color: 'success',
+                title: 'Updated',
+                description: res.message
+            });
+
+            if (method === 'update') {
+                const { categoryId } = props;
+                queryClient.invalidateQueries({ queryKey: ['category', categoryId] });
+            }
+        },
+        onError: (e) => {
+            console.error('Failed to update category:', e);
+            addToast({
+                variant: 'solid',
+                color: 'danger',
+                title: 'Error',
+                description: e.message
+            });
+        }
+    });
 
     function formSubmit() {
         const { data, success, error } = categoryFormSchema.safeParse(categoryForm);
+
         if (!success) {
             addToast({
                 variant: 'flat',
                 color: 'danger',
                 title: 'Invalid input',
-                description: `-- ${error.issues[0].path[0]} -- ${error.issues[0].message}`
-            })
+                description: `${error.issues[0].path[0]} - ${error.issues[0].message}`
+            });
+            return;
+        }
+
+        if (method === 'create') {
+            createMutation.mutate(data);
         } else {
-            createFormMutation.mutate(data);
+            const { categoryId } = props;
+            updateMutation.mutate({ cId: categoryId, data });
         }
     }
+
+    // ? Get current mutation state
+    const currentMutation = method === 'create' ? createMutation : updateMutation;
+    const submitButtonText = method === 'create' ? 'Create' : 'Update';
 
     return (
         <Card className="w-full sm:w-11/12 mx-auto bg-content3/20 hover:bg-content3/80">
@@ -91,11 +149,12 @@ export default function CategoryFormComponent() {
                     size='lg'
                     isClearable
                     fullWidth
+                    placeholder={method === 'create' ? 'Enter category name' : 'Update category name'}
                     onClear={() => {
                         setCategoryForm({
                             ...categoryForm,
                             name: ''
-                        })
+                        });
                     }}
                     startContent={
                         <Popover placement="top-start">
@@ -105,13 +164,12 @@ export default function CategoryFormComponent() {
                                     color={categoryForm.color}
                                     size="md"
                                     isIconOnly
-                                    onPress={() => { formSubmit() }}
                                 >
                                     {Icons.map((i, idx) => {
                                         if (i.name === categoryForm.icon) {
                                             return (
-                                                <i.icon key={`${i}-${idx}`} className='size-4' />
-                                            )
+                                                <i.icon key={`${i.name}-${idx}`} className='size-4' />
+                                            );
                                         }
                                     })}
                                 </Button>
@@ -121,67 +179,51 @@ export default function CategoryFormComponent() {
                                     <div className='space-y-2'>
                                         <h3 className="text-small font-bold tracking-wider">Icon</h3>
                                         <div className='flex flex-wrap gap-2'>
-                                            {Icons.map((i) => {
-                                                return (
-                                                    <Tooltip key={i.name} content={i.name} color='foreground' classNames={{ content: 'capitalize' }} delay={2000}>
-                                                        <Button
-                                                            key={i.name}
-                                                            variant={categoryForm.icon === i.name ? "solid" : 'light'}
-                                                            color='default'
-                                                            size="sm"
-                                                            isIconOnly
-                                                            onPress={() => {
-                                                                setCategoryForm({
-                                                                    ...categoryForm,
-                                                                    icon: i.name
-                                                                })
-                                                            }}
-                                                        >
-                                                            <i.icon className='size-4' />
-                                                        </Button>
-                                                    </Tooltip>
-                                                )
-                                            })}
+                                            {Icons.map((i) => (
+                                                <Tooltip
+                                                    key={i.name}
+                                                    content={i.name}
+                                                    color='foreground'
+                                                    classNames={{ content: 'capitalize' }}
+                                                    delay={2000}
+                                                >
+                                                    <Button
+                                                        variant={categoryForm.icon === i.name ? "solid" : 'light'}
+                                                        color='default'
+                                                        size="sm"
+                                                        isIconOnly
+                                                        onPress={() => {
+                                                            setCategoryForm({
+                                                                ...categoryForm,
+                                                                icon: i.name
+                                                            });
+                                                        }}
+                                                    >
+                                                        <i.icon className='size-4' />
+                                                    </Button>
+                                                </Tooltip>
+                                            ))}
                                         </div>
                                     </div>
                                     <div className='space-y-2'>
                                         <h3 className="text-small font-bold tracking-wider">Color</h3>
                                         <div className='flex flex-wrap gap-4'>
-                                            {Colors.map((c) => {
-                                                return (
-                                                    <Button
-                                                        key={c}
-                                                        variant={categoryForm.color === c ? 'shadow' : 'ghost'}
-                                                        // color={
-                                                        //     c === 'primary' ? 'primary' :
-                                                        //         c === 'secondary' ? 'secondary' :
-                                                        //             c === 'success' ? 'success' :
-                                                        //                 c === 'warning' ? 'warning' :
-                                                        //                     c === 'danger' ? 'danger' : 'default'
-
-                                                        // }
-                                                        color={getColorValue(c)}
-                                                        size="sm"
-                                                        radius='full'
-                                                        isIconOnly
-                                                        onPress={() => {
-                                                            // setCategoryForm({
-                                                            //     ...categoryForm,
-                                                            //     color: c === 'primary' ? 'primary' :
-                                                            //         c === 'secondary' ? 'secondary' :
-                                                            //             c === 'success' ? 'success' :
-                                                            //                 c === 'warning' ? 'warning' :
-                                                            //                     c === 'danger' ? 'danger' : 'default'
-                                                            // })
-                                                            setCategoryForm({
-                                                                ...categoryForm,
-                                                                color: getColorValue(c)
-                                                            })
-                                                        }}
-                                                    />
-                                                )
-                                            })}
-
+                                            {Colors.map((c) => (
+                                                <Button
+                                                    key={c}
+                                                    variant={categoryForm.color === c ? 'shadow' : 'ghost'}
+                                                    color={getColorValue(c)}
+                                                    size="sm"
+                                                    radius='full'
+                                                    isIconOnly
+                                                    onPress={() => {
+                                                        setCategoryForm({
+                                                            ...categoryForm,
+                                                            color: getColorValue(c)
+                                                        });
+                                                    }}
+                                                />
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
@@ -198,22 +240,26 @@ export default function CategoryFormComponent() {
                         setCategoryForm({
                             ...categoryForm,
                             name: ev.target.value
-                        })
+                        });
                     }}
                     classNames={{ innerWrapper: 'gap-2' }}
                 />
                 <Button
                     variant="solid"
-                    color="secondary"
+                    color={method === 'create' ? 'primary' : 'secondary'}
                     size="md"
                     isIconOnly
-                    isLoading={createFormMutation.isPending}
-                    onPress={() => { formSubmit() }}
+                    isLoading={currentMutation.isPending}
+                    onPress={formSubmit}
+                    title={submitButtonText}
                 >
-                    <CornerRightUp className='size-4' />
+                    {method === 'create' ? (
+                        <CornerRightUp className='size-4' />
+                    ) : (
+                        <CornerRightDown className='size-4' />
+                    )}
                 </Button>
             </CardHeader>
         </Card>
-
-    )
+    );
 }

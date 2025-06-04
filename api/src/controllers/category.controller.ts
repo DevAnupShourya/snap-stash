@@ -141,7 +141,7 @@ const categoryServer = new Hono()
                     return c.json(genApiResponse('Invalid query parameters'), 400);
                 }
 
-                return c.json({ success: true, data: category }, 200);
+                return c.json(genApiResponse('Category details', category, true), 200);
             } catch (error) {
                 if (error instanceof HTTPException) {
                     throw error;
@@ -201,7 +201,7 @@ const categoryServer = new Hono()
                         { $set: body },
                         { new: true, runValidators: true }
                     )
-                    .populate('tasks')
+                    // .populate('tasks')
                     .lean();
 
                 return c.json(genApiResponse('Category updated successfully', updatedCategory, true), 200);

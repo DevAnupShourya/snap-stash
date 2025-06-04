@@ -1,8 +1,9 @@
 import { Button, Card, CardHeader } from "@heroui/react";
 import { Link } from "@tanstack/react-router";
-import { GripVertical, Image, PhoneOutgoing } from "lucide-react";
+import { GripVertical, Image } from "lucide-react";
 
-import { Category } from '@/types/category';
+import { Category } from '@/validation/category';
+import { Icons } from "@/config/constants";
 
 export default function CategoryComp({ _id, color, createdAt, icon, name, tasks, updatedAt }: Category) {
     return (
@@ -15,13 +16,19 @@ export default function CategoryComp({ _id, color, createdAt, icon, name, tasks,
                 <main className="flex flex-nowrap gap-4 items-center justify-between">
                     <Button
                         variant="flat"
-                        color="default"
+                        color={color}
                         radius="full"
                         size="lg"
                         isIconOnly
                         className="pointer-events-none"
                     >
-                        <Image className="size-4" />
+                        {Icons.map((i) => {
+                            if (i.name === icon) {
+                                return (
+                                    <i.icon key={`${i.name} icon`}  aria-label={`${i.name} icon`} className='size-4' />
+                                )
+                            }
+                        })}
                     </Button>
                     <h1 className="capitalize text-lg font-semibold tracking-wide">{name}</h1>
                 </main>

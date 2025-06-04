@@ -1,12 +1,7 @@
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/categories/')({
-  component: RouteComponent,
-  validateSearch: (search) => paginationParamsSchema.parse(search),
-})
-
-import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 import {
   Card, CardHeader, CardBody, CardFooter,
   Divider,
@@ -27,10 +22,10 @@ import {
 } from "@heroui/react";
 import { cn } from '@/utils/helper-functions';
 
-import { paginationParamsSchema } from '@/types/category';
+import { getCategories } from '@/services/category.service';
+import { categoryPaginationParamsSchema } from '@/validation/category';
 
 import Category from '@/components/sections/category';
-import { getCategories } from '@/services/category.service';
 import SomethingWentWrong from '@/components/sections/error';
 import LoadingContent from '@/components/sections/loader';
 import CategoryForm from '@/components/sections/category-form';
@@ -40,6 +35,11 @@ import { ArrowDown01, ArrowDown10, ArrowUpToLine, ListFilterPlus, Plus, Search }
 import { OrderBy } from '@/config/constants';
 import { useBackToTop } from '@/utils/hooks';
 
+export const Route = createFileRoute('/categories/')({
+  component: RouteComponent,
+  validateSearch: (search) => categoryPaginationParamsSchema.parse(search),
+})
+
 function RouteComponent() {
   const [isCreatingNewCategory, setIsCreatingNewCategory] = useState(false);
   const { isVisible, scrollableRef, scrollToTop } = useBackToTop();
@@ -48,7 +48,7 @@ function RouteComponent() {
   const { page, search, sortBy, sortOrder, limit } = useSearch({ from: '/categories/' });
 
   const allCategoriesQuery = useQuery({
-    queryKey: ['all-categories', page, search, sortBy, sortOrder],
+    queryKey: ['all-categories', page, search, sortBy, sortOrder, limit],
     queryFn: () => getCategories({ page, search, sortBy, sortOrder, limit }),
   });
 
@@ -60,6 +60,7 @@ function RouteComponent() {
   };
 
   const handleSearch = (searchValue: string) => {
+    // TODO have debounce here
     navigate({
       search: (prev) => ({ ...prev, search: searchValue, page: 1 }),
       from: '/categories'
@@ -87,7 +88,6 @@ function RouteComponent() {
     });
   };
 
-
   useEffect(() => {
     if (allCategoriesQuery.status === 'error') {
       console.error(allCategoriesQuery.error);
@@ -101,6 +101,7 @@ function RouteComponent() {
     }
   }, [allCategoriesQuery.error]);
 
+  // TODO should not keep this but without it not refetching not info yet why
   useEffect(() => {
     allCategoriesQuery.refetch();
   }, [limit])
@@ -198,10 +199,10 @@ function RouteComponent() {
             {(allCategoriesQuery.isPending || allCategoriesQuery.isLoading) && <LoadingContent />}
             {!allCategoriesQuery.isLoading && allCategoriesQuery.isError && <SomethingWentWrong />}
             {!allCategoriesQuery.isLoading && allCategoriesQuery.isSuccess && (
-              allCategoriesQuery.data.categories.length < 1 ? (
+              allCategoriesQuery.data.payload.categories.length < 1 ? (
                 <NothingToShow name='task' />
               ) : (
-                allCategoriesQuery.data.categories.map((c) => {
+                allCategoriesQuery.data.payload.categories.map((c) => {
                   return (
                     <Category key={c._id} {...c} />
                   )
@@ -215,8 +216,8 @@ function RouteComponent() {
                     loop showControls showShadow
                     variant='bordered'
                     color="default"
-                    page={allCategoriesQuery.data.pagination.currentPage}
-                    total={allCategoriesQuery.data.pagination.totalPages}
+                    page={allCategoriesQuery.data.payload.pagination.currentPage}
+                    total={allCategoriesQuery.data.payload.pagination.totalPages}
                     onChange={handlePageChange}
                   />
                   <Select
@@ -246,7 +247,7 @@ function RouteComponent() {
         >
           <Divider />
           <CardFooter className='z-10'>
-            <CategoryForm />
+            <CategoryForm method='create' />
           </CardFooter>
         </section>
       </Card>
