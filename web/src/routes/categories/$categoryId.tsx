@@ -24,7 +24,10 @@ import LoadingContent from '@/components/sections/loader';
 import { cn } from '@/utils/helper-functions';
 import { tasksPaginationParamsSchema } from '@/validation/category';
 import { useBackToTop } from '@/utils/hooks';
+
 import { OrderByTask } from '@/config/constants';
+
+import { useDebouncedCallback } from 'use-debounce';
 
 export const Route = createFileRoute('/categories/$categoryId')({
   component: RouteComponent,
@@ -38,7 +41,7 @@ function RouteComponent() {
   const { isVisible, scrollableRef, scrollToTop } = useBackToTop();
 
   const navigate = useNavigate();
-  const { page, search, sortBy, sortOrder, limit } = useSearch({ from: '/categories/$categoryId' });
+  const { sortBy, sortOrder } = useSearch({ from: '/categories/$categoryId' });
 
   const router = useRouter();
   const { categoryId } = useParams({ from: '/categories/$categoryId' })
@@ -66,13 +69,13 @@ function RouteComponent() {
     });
   };
 
-  const handleSearch = (searchValue: string) => {
-    // TODO have debounce here
+  const handleSearch = useDebouncedCallback((searchValue: string) => {
     navigate({
       search: (prev) => ({ ...prev, search: searchValue, page: 1 }),
       from: '/categories/$categoryId'
     });
-  };
+  }, 1000);
+
 
   const handleSortOrder = () => {
     navigate({

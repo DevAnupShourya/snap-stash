@@ -140,7 +140,7 @@ export default function TaskComponent({ _id, categoryId, content, createdAt, don
                 className="w-full sm:w-11/12 mx-auto bg-content2 hover:bg-content2/80 selection:bg-content2/90 group"
             >
                 <CardHeader className="gap-4 justify-between">
-                    <main className="flex flex-nowrap gap-4 items-center justify-between">
+                    <main className="flex flex-nowrap gap-4 items-center w-full">
                         <Button
                             variant={done ? 'solid' : 'flat'}
                             color={done ? 'primary' : 'default'}
@@ -166,7 +166,9 @@ export default function TaskComponent({ _id, categoryId, content, createdAt, don
                                     }}
                                     onKeyDown={(e) => {
                                         if (e.key === "Enter") {
-                                            editSubmit();
+                                            if (e.key === "Enter") {
+                                                editSubmit();
+                                            }
                                         }
                                     }}
                                     defaultValue={content}
@@ -262,7 +264,6 @@ export default function TaskComponent({ _id, categoryId, content, createdAt, don
                                     Edit
                                 </DropdownItem>
                                 <DropdownItem
-                                    // TODO https://music.youtube.com/watch?v=UN2y7-_2Vo4&list=RDAMVMe-1xmmEb49I
                                     key="delete"
                                     textValue="delete"
                                     aria-label="delete menu"

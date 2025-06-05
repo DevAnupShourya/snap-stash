@@ -34,6 +34,7 @@ import NothingToShow from '@/components/sections/nothing-to-show';
 import { ArrowDown01, ArrowDown10, ArrowUpToLine, ListFilterPlus, Plus, Search } from 'lucide-react';
 import { OrderBy } from '@/config/constants';
 import { useBackToTop } from '@/utils/hooks';
+import { useDebouncedCallback } from 'use-debounce';
 
 export const Route = createFileRoute('/categories/')({
   component: RouteComponent,
@@ -59,13 +60,16 @@ function RouteComponent() {
     });
   };
 
-  const handleSearch = (searchValue: string) => {
-    // TODO have debounce here
-    navigate({
-      search: (prev) => ({ ...prev, search: searchValue, page: 1 }),
-      from: '/categories'
-    });
-  };
+  const handleSearch = useDebouncedCallback((searchValue: string) => {
+    // * to prevent searching for when it is already searching
+    if (!allCategoriesQuery.isRefetching) {
+      navigate({
+        search: (prev) => ({ ...prev, search: searchValue, page: 1 }),
+        from: '/categories'
+      });
+    }
+  }, 1000);
+
 
   const handleSortBy = (name: string) => {
     navigate({
@@ -200,7 +204,7 @@ function RouteComponent() {
             {!allCategoriesQuery.isLoading && allCategoriesQuery.isError && <SomethingWentWrong />}
             {!allCategoriesQuery.isLoading && allCategoriesQuery.isSuccess && (
               allCategoriesQuery.data.payload.categories.length < 1 ? (
-                <NothingToShow name='task' />
+                <NothingToShow name='category' />
               ) : (
                 allCategoriesQuery.data.payload.categories.map((c) => {
                   return (
