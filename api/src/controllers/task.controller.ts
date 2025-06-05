@@ -4,7 +4,13 @@ import { validator } from 'hono/validator';
 import { Types } from 'mongoose';
 
 import { TaskModel } from '@/models/task.models.js';
-import { bulkUpdateSchema, createTaskSchema, getTasksQuerySchema, taskParamsSchema, updateTaskSchema } from '@/validators/task.validator.js';
+import {
+    createTaskSchema,
+    getTasksQuerySchema,
+    taskParamsSchema,
+    updateTaskSchema,
+    bulkUpdateSchema,
+} from '@/validators/task.validator.js';
 import { CategoryModel } from '@/models/category.models.js';
 import { genApiResponse } from '@/utils/helper.js';
 import { categoryParamsSchema } from '@/validators/category.validator.js';
@@ -434,51 +440,6 @@ const taskServer = new Hono()
             }
         }
     )
-
-    // // ? Get task statistics
-    // .get(
-    //     '/stats/overview',
-    //     async (c) => {
-    //         try {
-    //             const stats = await TaskModel.aggregate([
-    //                 {
-    //                     $group: {
-    //                         _id: null,
-    //                         totalTasks: { $sum: 1 },
-    //                         completedTasks: {
-    //                             $sum: { $cond: [{ $eq: ['$done', true] }, 1, 0] }
-    //                         },
-    //                         pendingTasks: {
-    //                             $sum: { $cond: [{ $eq: ['$done', false] }, 1, 0] }
-    //                         },
-    //                     }
-    //                 },
-    //                 {
-    //                     $project: {
-    //                         _id: 0,
-    //                         totalTasks: 1,
-    //                         completedTasks: 1,
-    //                         pendingTasks: 1,
-    //                         completionRate: {
-    //                             $cond: [
-    //                                 { $eq: ['$totalTasks', 0] },
-    //                                 0,
-    //                                 { $multiply: [{ $divide: ['$completedTasks', '$totalTasks'] }, 100] }
-    //                             ]
-    //                         }
-    //                     }
-    //                 }
-    //             ]);
-
-    //             return c.json(genApiResponse('Task Stats',
-    //                 stats[0] || { totalTasks: 0, completedTasks: 0, pendingTasks: 0, completionRate: 0 }, true), 200);
-    //         } catch (error) {
-    //             console.error('Error fetching task statistics:', error);
-    //             return c.json(genApiResponse('Failed to fetch task statistics'), 500);
-    //         }
-    //     }
-    // );
-
 
     // ? Get task statistics
     .get(

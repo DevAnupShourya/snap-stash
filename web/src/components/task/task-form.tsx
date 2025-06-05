@@ -57,7 +57,6 @@ export default function TaskFormComponent({ setFormVisible }: { setFormVisible: 
         }
     })
 
-
     function formSubmit() {
         const { data, success, error } = createTaskSchema.safeParse(taskForm);
         if (!success) {

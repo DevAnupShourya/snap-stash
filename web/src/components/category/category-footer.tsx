@@ -1,24 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useRouter } from '@tanstack/react-router';
+
 import {
     CardFooter,
     Divider,
     Button,
     CircularProgress,
     addToast,
-    Modal,
-    ModalContent,
-    ModalHeader,
-    ModalBody,
-    ModalFooter,
-    useDisclosure,
+    Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure,
 } from "@heroui/react";
+
 import { Bolt, Trash2, X } from 'lucide-react';
 
 import { getStatsByCategoryId } from '@/services/task.service';
 import { deleteCategory } from '@/services/category.service';
-import { useRouter } from '@tanstack/react-router';
-import CategoryFormComponent from './category-form';
+import CategoryFormComponent from '@/components/category/category-form';
 
 export default function CategoryFooter({ cId }: { cId: string }) {
     const [isEditFormShowing, setIsEditFormShowing] = useState(false);
@@ -80,6 +77,7 @@ export default function CategoryFooter({ cId }: { cId: string }) {
     return (
         <section className='absolute w-full bottom-0 left-0 bg-content2/20 backdrop-blur-sm transition-opacity duration-200'>
             <Divider />
+
             {statsQuery.isSuccess && (
                 <CardFooter className='flex flex-nowrap justify-between items-center gap-2'>
                     {isEditFormShowing ? (
@@ -133,31 +131,29 @@ export default function CategoryFooter({ cId }: { cId: string }) {
                         </Button>
                     </div>
 
-                    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-                        <ModalContent>
-                            {(onClose) => (
-                                <>
-                                    <ModalHeader className="flex flex-col gap-1">Delete Category</ModalHeader>
-                                    <ModalBody>
-                                        <p>Do you really want to delete this category? With this action all tasks it has will also delete. You want to proceed!</p>
-                                    </ModalBody>
-                                    <ModalFooter>
-                                        <Button color="warning" variant="light" onPress={onClose}>
-                                            No
-                                        </Button>
-                                        <Button color="danger" onPress={() => { deleteCategoryMutation.mutate() }}>
-                                            Yes, Delete
-                                        </Button>
-                                    </ModalFooter>
-                                </>
-                            )}
-                        </ModalContent>
-                    </Modal>
-
-                </CardFooter>
-            )
+                </CardFooter>)
             }
-        </section >
 
+            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">Delete Category</ModalHeader>
+                            <ModalBody>
+                                <p>Do you really want to delete this category? With this action all tasks it has will also delete. You want to proceed!</p>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="warning" variant="light" onPress={onClose}>
+                                    No
+                                </Button>
+                                <Button color="danger" onPress={() => { deleteCategoryMutation.mutate() }}>
+                                    Yes, Delete
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+        </section >
     )
 }

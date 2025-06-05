@@ -46,12 +46,3 @@ export function useCopyToClipboard(txtToCopy: string, resetAfterMs = 3000) {
 
     return { isCopied, copy };
 }
-
-export const useDebounce = (fn: Function, delay: number) => {
-    const timeoutRef = useRef<NodeJS.Timeout>();
-
-    return useCallback((...args: any[]) => {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = setTimeout(() => fn(...args), delay);
-    }, [fn, delay]);
-};

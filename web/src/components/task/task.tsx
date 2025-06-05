@@ -1,19 +1,25 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSearch } from "@tanstack/react-router";
 
-import { addToast, Button, Card, CardHeader, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Textarea, useDisclosure } from "@heroui/react";
+import {
+    addToast,
+    Button,
+    Card, CardHeader,
+    Dropdown, DropdownItem, DropdownMenu, DropdownTrigger,
+    Modal, ModalBody, ModalContent, ModalFooter, ModalHeader,
+    Textarea, useDisclosure
+} from "@heroui/react";
+import { BookCopy, Circle, CircleCheck, Copy, CopyCheck, GripVertical, ListEnd, SquarePen, ToggleLeft, ToggleRight, Trash, X } from "lucide-react";
 import { cn } from "@/utils/helper-functions";
 
-import { BookCopy, Circle, CircleCheck, Copy, CopyCheck, GripVertical, ListEnd, SquarePen, ToggleLeft, ToggleRight, Trash, X } from "lucide-react";
-
 import { editTaskSchema, Task } from '@/validation/task';
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteTask, editTask, toggleTaskStatus } from "@/services/task.service";
-import { useSearch } from "@tanstack/react-router";
 import { useCopyToClipboard } from "@/utils/hooks";
 
 const iconClasses = "size-4 text-default-500 pointer-events-none flex-shrink-0";
 
-export default function TaskComponent({ _id, categoryId, content, createdAt, done, updatedAt }: Task) {
+export default function TaskComponent({ _id, categoryId, content, done, updatedAt }: Task) {
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState(content);
     const {
@@ -24,7 +30,7 @@ export default function TaskComponent({ _id, categoryId, content, createdAt, don
     } = useDisclosure();
 
     const queryClient = useQueryClient();
-    const { isCopied, copy } = useCopyToClipboard(_id); // todo make it content later
+    const { isCopied, copy } = useCopyToClipboard(content);
     const { page, search, sortBy, sortOrder, limit } = useSearch({ from: '/categories/$categoryId' });
 
     const toggleMutation = useMutation({
@@ -280,6 +286,7 @@ export default function TaskComponent({ _id, categoryId, content, createdAt, don
                     )}
                 </CardHeader>
             </Card >
+            
             {/* Delete Confirm Modal */}
             <Modal isOpen={isDeleteConfirmModalOpen} onOpenChange={onDeleteConfirmModalOpenChange}>
                 <ModalContent>

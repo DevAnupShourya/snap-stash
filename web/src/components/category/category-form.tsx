@@ -1,20 +1,19 @@
-import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
+
 import {
     Card, CardHeader,
     Input,
     Button,
     Tooltip,
     addToast,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
+    Popover, PopoverTrigger, PopoverContent,
 } from "@heroui/react";
+import { CornerRightDown, CornerRightUp } from 'lucide-react';
 
 import { Category, CategoryForm, categoryFormSchema } from '@/validation/category';
 import { Colors, Icons } from '@/config/constants';
 
-import { CornerRightDown, CornerRightUp } from 'lucide-react';
 import { createCategory, updateCategory } from '@/services/category.service';
 
 // ? Helper function to get color value
@@ -142,6 +141,7 @@ export default function CategoryFormComponent(props: CategoryFormComponentProps)
     return (
         <Card className="w-full sm:w-11/12 mx-auto bg-content3/20 hover:bg-content3/80">
             <CardHeader className="gap-2 justify-between items-center">
+                
                 <Input
                     type='text'
                     name='category'

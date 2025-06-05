@@ -1,5 +1,6 @@
 export type SiteConfig = typeof siteConfig;
 
+// TODO add it in html
 export const siteConfig = {
   name: "SnapStash",
   description: "A fast, private, minimal web app to stash personal content (videos, notes, links, files) across devices with instant, passwordless login.",
@@ -9,61 +10,18 @@ export const siteConfig = {
       href: "/",
     },
     {
-      label: "Docs",
-      href: "/docs",
+      label: "Register",
+      href: "/register",
     },
     {
-      label: "Pricing",
-      href: "/pricing",
-    },
-    {
-      label: "Blog",
-      href: "/blog",
-    },
-    {
-      label: "About",
-      href: "/about",
-    },
-  ],
-  navMenuItems: [
-    {
-      label: "Profile",
-      href: "/profile",
-    },
-    {
-      label: "Dashboard",
-      href: "/dashboard",
-    },
-    {
-      label: "Projects",
-      href: "/projects",
-    },
-    {
-      label: "Team",
-      href: "/team",
-    },
-    {
-      label: "Calendar",
-      href: "/calendar",
-    },
-    {
-      label: "Settings",
-      href: "/settings",
-    },
-    {
-      label: "Help & Feedback",
-      href: "/help-feedback",
-    },
-    {
-      label: "Logout",
-      href: "/logout",
+      label: "Login",
+      href: "/login",
     },
   ],
   links: {
-    github: "https://github.com/frontio-ai/heroui",
-    twitter: "https://twitter.com/hero_ui",
-    docs: "https://heroui.com",
-    discord: "https://discord.gg/9b6yyZKmH4",
-    sponsor: "https://patreon.com/jrgarciadev",
+    github: "https://github.com/DevAnupShourya/snap-stash",
+    twitter: "https://twitter.com/Shourya_Anup",
+    docs: "https://github.com/DevAnupShourya/snap-stash?tab=readme-ov-file#snapstash",
+    discord: "https://discord.com/users/1205834045486006323",
   },
 };

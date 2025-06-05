@@ -1,11 +1,12 @@
-import { Button, Card, CardHeader } from "@heroui/react";
 import { Link } from "@tanstack/react-router";
-import { GripVertical, Image } from "lucide-react";
+
+import { Button, Card, CardHeader } from "@heroui/react";
+import { GripVertical } from "lucide-react";
 
 import { Category } from '@/validation/category';
 import { Icons } from "@/config/constants";
 
-export default function CategoryComp({ _id, color, createdAt, icon, name, tasks, updatedAt }: Category) {
+export default function CategoryComponent({ _id, color, icon, name, tasks }: Category) {
     return (
         <Card
             as={Link}
@@ -25,7 +26,7 @@ export default function CategoryComp({ _id, color, createdAt, icon, name, tasks,
                         {Icons.map((i) => {
                             if (i.name === icon) {
                                 return (
-                                    <i.icon key={`${i.name} icon`}  aria-label={`${i.name} icon`} className='size-4' />
+                                    <i.icon key={`${i.name} icon`} aria-label={`${i.name} icon`} className='size-4' />
                                 )
                             }
                         })}

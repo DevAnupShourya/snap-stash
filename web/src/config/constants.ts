@@ -49,8 +49,7 @@ export const Icons = [
     { name: 'folder', icon: FolderIcon },
 ];
 
-export const Colors = ["default", "secondary", "primary", "success", "warning", "danger"]
-
+export const Colors = ["default", "secondary", "primary", "success", "warning", "danger"];
 
 export const OrderBy = [
     {

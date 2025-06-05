@@ -1,8 +1,14 @@
 import http from '@/lib/http';
 import { TasksPaginationParams } from '@/validation/category';
-import { GeneralErrorResponseType, GetTasksType, GetCategoryStatsType, CreateTaskType, ToggleTaskStatusType, DeleteTaskType } from '@/validation/response';
+import {
+    GeneralErrorResponseType,
+    GetTasksType,
+    GetCategoryStatsType,
+    CreateTaskType,
+    ToggleTaskStatusType,
+    DeleteTaskType
+} from '@/validation/response';
 import { HTTPError } from 'ky';
-
 
 export async function getAllTasksByCategoryId(params: TasksPaginationParams & { cId: string }): Promise<GetTasksType> {
     try {

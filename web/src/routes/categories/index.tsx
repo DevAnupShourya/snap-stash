@@ -1,7 +1,8 @@
-import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
-
-import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
+import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query';
+
+import { cn } from '@/utils/helper-functions';
 import {
   Card, CardHeader, CardBody, CardFooter,
   Divider,
@@ -12,29 +13,23 @@ import {
   ScrollShadow,
   Pagination,
   addToast,
-  Checkbox,
-  CheckboxGroup,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  Select,
-  SelectItem,
+  Checkbox, CheckboxGroup,
+  Popover, PopoverTrigger, PopoverContent,
+  Select, SelectItem,
 } from "@heroui/react";
-import { cn } from '@/utils/helper-functions';
+import { ArrowDown01, ArrowDown10, ArrowUpToLine, ListFilterPlus, Plus, Search } from 'lucide-react';
+import Category from '@/components/category/category';
+import SomethingWentWrong from '@/components/common/error';
+import LoadingContent from '@/components/common/loader';
+import CategoryForm from '@/components/category/category-form';
+import NothingToShow from '@/components/common/nothing-to-show';
 
 import { getCategories } from '@/services/category.service';
 import { categoryPaginationParamsSchema } from '@/validation/category';
 
-import Category from '@/components/sections/category';
-import SomethingWentWrong from '@/components/sections/error';
-import LoadingContent from '@/components/sections/loader';
-import CategoryForm from '@/components/sections/category-form';
-import NothingToShow from '@/components/sections/nothing-to-show';
-
-import { ArrowDown01, ArrowDown10, ArrowUpToLine, ListFilterPlus, Plus, Search } from 'lucide-react';
+import { useDebouncedCallback } from 'use-debounce';
 import { OrderBy } from '@/config/constants';
 import { useBackToTop } from '@/utils/hooks';
-import { useDebouncedCallback } from 'use-debounce';
 
 export const Route = createFileRoute('/categories/')({
   component: RouteComponent,
@@ -105,7 +100,7 @@ function RouteComponent() {
     }
   }, [allCategoriesQuery.error]);
 
-  // TODO should not keep this but without it not refetching not info yet why
+  // TODO should not keep this but without it not refetching not idea yet why
   useEffect(() => {
     allCategoriesQuery.refetch();
   }, [limit])
@@ -115,6 +110,7 @@ function RouteComponent() {
       <Card className="w-screen sm:w-[70vw] md:w-[60vw] lg:w-[50vw] min-h-full">
 
         <CardHeader className="flex gap-2">
+
           <Input
             placeholder="Search Category"
             startContent={

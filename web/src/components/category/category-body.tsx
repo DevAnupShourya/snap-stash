@@ -1,22 +1,22 @@
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-
-import { getAllTasksByCategoryId } from '@/services/task.service';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 
 import {
     CardBody,
     Pagination,
     ScrollShadow,
-    Select,
-    SelectItem,
+    Select, SelectItem,
     addToast,
 } from "@heroui/react";
-import Task from '@/components/sections/task';
-import SomethingWentWrong from '@/components/sections/error';
-import LoadingContent from '@/components/sections/loader';
-import NothingToShow from '@/components/sections/nothing-to-show';
-import TaskForm from '@/components/sections/task/task-form';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+
+import Task from '@/components/task/task';
+import TaskForm from '@/components/task/task-form';
+import SomethingWentWrong from '@/components/common/error';
+import LoadingContent from '@/components/common/loader';
+import NothingToShow from '@/components/common/nothing-to-show';
+
+import { getAllTasksByCategoryId } from '@/services/task.service';
 
 type CategoryBodyProps = {
     cId: string;
@@ -65,19 +65,22 @@ export default function CategoryBody({ cId, formVisible, setFormVisible, scrolla
         <CardBody className='h-[60vh]'>
             <ScrollShadow hideScrollBar className='space-y-2' ref={scrollableRef}>
                 {formVisible && <TaskForm setFormVisible={setFormVisible} />}
+
                 {!taskQuery.isLoading && !taskQuery.isPending && taskQuery.isSuccess && (
-                    taskQuery.data.payload.tasks.length < 1 ? (
+                    taskQuery.data.payload.tasks.length < 1 ?
                         <NothingToShow name='task' />
-                    ) : (
+                        :
                         <>
                             {taskQuery.data.payload.tasks.map((t) => (
                                 <Task key={t._id} {...t} />
                             ))}
                         </>
-                    )
                 )}
+
                 {(taskQuery.isLoading || taskQuery.isPending) && <LoadingContent />}
+
                 {!taskQuery.isLoading && taskQuery.isError && <SomethingWentWrong />}
+                
                 {!taskQuery.isLoading && taskQuery.isSuccess && (
                     <div className='grid place-items-center pt-8 pb-20 gap-4'>
                         <div className='flex flex-nowrap gap-2 justify-between items-center w-11/12'>

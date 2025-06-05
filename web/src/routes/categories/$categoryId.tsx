@@ -1,7 +1,7 @@
-import { createFileRoute, useNavigate, useParams, useRouter, useSearch } from '@tanstack/react-router'
-
 import { useEffect, useState } from 'react';
+import { createFileRoute, useNavigate, useParams, useRouter, useSearch } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query';
+
 import {
   Card, CardHeader,
   Divider,
@@ -10,23 +10,21 @@ import {
   Tooltip,
   Kbd,
   addToast,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  CheckboxGroup,
-  Checkbox,
+  Popover, PopoverTrigger, PopoverContent,
+  CheckboxGroup, Checkbox,
 } from "@heroui/react";
 import { ArrowUpToLine, ChevronLeft, Search, Plus, X, ListFilterPlus, ArrowDown01, ArrowDown10 } from 'lucide-react';
-import CategoryFooter from '@/components/sections/category-footer';
-import CategoryBody from '@/components/sections/category-body';
-import { getCategoryByCategoryId } from '@/services/category.service';
-import LoadingContent from '@/components/sections/loader';
+
+import CategoryFooter from '@/components/category/category-footer';
+import CategoryBody from '@/components/category/category-body';
+import LoadingContent from '@/components/common/loader';
 import { cn } from '@/utils/helper-functions';
+
+import { getCategoryByCategoryId } from '@/services/category.service';
 import { tasksPaginationParamsSchema } from '@/validation/category';
-import { useBackToTop } from '@/utils/hooks';
 
 import { OrderByTask } from '@/config/constants';
-
+import { useBackToTop } from '@/utils/hooks';
 import { useDebouncedCallback } from 'use-debounce';
 
 export const Route = createFileRoute('/categories/$categoryId')({
@@ -38,12 +36,11 @@ function RouteComponent() {
   const [isSearchInputShowing, setIsSearchInputShowing] = useState(false);
   const [isNewTaskCreating, setIsNewTaskCreating] = useState(false)
 
+  const navigate = useNavigate();
+  const router = useRouter();
   const { isVisible, scrollableRef, scrollToTop } = useBackToTop();
 
-  const navigate = useNavigate();
   const { sortBy, sortOrder } = useSearch({ from: '/categories/$categoryId' });
-
-  const router = useRouter();
   const { categoryId } = useParams({ from: '/categories/$categoryId' })
 
   const categoryQuery = useQuery({
@@ -61,7 +58,6 @@ function RouteComponent() {
     }
   }, [categoryQuery.status]);
 
-
   const handleSortBy = (name: string) => {
     navigate({
       search: (prev) => ({ ...prev, sortBy: name as "" | "content" | "done" | "createdAt" | "updatedAt", page: 1 }),
@@ -76,7 +72,6 @@ function RouteComponent() {
     });
   }, 1000);
 
-
   const handleSortOrder = () => {
     navigate({
       search: (prev) => ({ ...prev, sortOrder: sortOrder === 'desc' ? 'asc' : 'desc', page: 1 }),
@@ -84,12 +79,13 @@ function RouteComponent() {
     });
   };
 
-
   return (
     <section className='grid place-items-center'>
       {(categoryQuery.isLoading || categoryQuery.isPending) && <LoadingContent />}
+
       {!(categoryQuery.isLoading || categoryQuery.isPending) && categoryQuery.isSuccess && (
         <Card className="w-screen sm:w-[70vw] md:w-[60vw] lg:w-[50vw] min-h-full">
+
           <CardHeader className="flex gap-2 justify-between">
             <div className='flex flex-nowrap gap-2 items-center w-full'>
               <Tooltip size='sm' content='Back'>
@@ -229,6 +225,7 @@ function RouteComponent() {
           />
         </Card>
       )}
+
       {!(categoryQuery.isLoading || categoryQuery.isPending) && categoryQuery.isError && (
         <p>Unable to find this page.</p>
       )}

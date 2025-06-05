@@ -5,12 +5,13 @@ import {
   NavbarContent,
   NavbarItem
 } from "@heroui/react";
+
 import { Link } from "@tanstack/react-router";
 import { ThemeSwitch } from "@/components/theme-switch";
+
 import { Logo } from "@/components/icons";
 
-export const Navbar = () => {
-
+export default function Navbar() {
   return (
     <HeroUINavbar maxWidth="xl" position="sticky">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
@@ -36,5 +37,5 @@ export const Navbar = () => {
         </NavbarItem>
       </NavbarContent>
     </HeroUINavbar>
-  );
-};
+  )
+}

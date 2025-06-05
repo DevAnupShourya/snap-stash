@@ -5,7 +5,7 @@ const http = ky.create({
   timeout: false,
   retry: 0,
   hooks: {
-    // TODO : later
+    // TODO : later in auth maybe useful
     // beforeRequest: [
     //   request => {
     //     const token = localStorage.getItem('token');

@@ -1,8 +1,14 @@
 import http from '@/lib/http';
 import { CategoryForm, CategoryPaginationParams } from '@/validation/category';
-import { GeneralErrorResponseType, GetCategoriesType, CreateCategoryType, GetCategoryByIdType, DeleteCategoryType, UpdateCategoryType } from '@/validation/response';
+import {
+    GeneralErrorResponseType,
+    GetCategoriesType,
+    CreateCategoryType,
+    GetCategoryByIdType,
+    DeleteCategoryType,
+    UpdateCategoryType
+} from '@/validation/response';
 import { HTTPError } from 'ky';
-
 
 export async function getCategoryByCategoryId(cId: string): Promise<GetCategoryByIdType> {
     try {
@@ -81,7 +87,7 @@ export async function updateCategory({ cId, data }: { cId: string, data: any }):
             const errorBody = await error.response.json<GeneralErrorResponseType>();
             throw new Error(`${errorBody.message} - ${errorBody.payload}`);
         } else {
-            console.error('[deleteCategory] Unexpected Error:', error);
+            console.error('[updateCategory] Unexpected Error:', error);
             throw new Error('Unexpected error occurred');
         }
     }

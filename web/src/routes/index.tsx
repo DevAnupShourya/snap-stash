@@ -1,8 +1,11 @@
-import { Form, InputOtp } from "@heroui/react";
-
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { Button, ButtonGroup } from "@heroui/button";
 import { useState } from "react";
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+
+import {
+  Form,
+  InputOtp,
+  Button, ButtonGroup
+} from "@heroui/react";
 import { Eraser, Key } from "lucide-react";
 
 export const Route = createFileRoute('/')({
@@ -20,14 +23,16 @@ export default function IndexPage() {
     e.preventDefault();
     let authData = Object.fromEntries(new FormData(e.currentTarget));
 
-    // call for api then redirect to dashboard
+    // TODO add basic jwt auth 
     if (authData.pin === import.meta.env.VITE_PIN) {
       setIsMakingAPICall(false);
       setInputStatus(true);
       console.log('Success');
 
+      // ? Navigate user after success authentication
       navigate({
         to: '/categories',
+        search: { page: 1, search: '', sortBy: 'createdAt', sortOrder: 'asc', limit: 10 }
       });
     } else {
       setIsMakingAPICall(false);

@@ -1,10 +1,15 @@
-import { Link as LinkComp } from "@heroui/react";
 import { Link } from "@tanstack/react-router";
 import { createRootRoute, Outlet } from '@tanstack/react-router'
-import { Navbar } from "@/components/navbar";
+
+import { Link as LinkComp } from "@heroui/react";
+import Navbar  from "@/components/navbar";
 
 export const Route = createRootRoute({
-  component: () => (
+  component: RootLayout
+});
+
+export default function RootLayout() {
+  return (
     <div className="relative flex flex-col h-screen container mx-auto max-w-7xl custom-font">
       <Navbar />
       <main className="flex-grow grid place-items-center">
@@ -25,5 +30,5 @@ export const Route = createRootRoute({
         </p>
       </footer>
     </div>
-  ),
-})
+  )
+}

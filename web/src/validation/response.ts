@@ -17,7 +17,7 @@ const generalResStruct = z.object({
     message: z.string(),
 })
 
-// ? This section always in api response
+// ? This section always in api response error
 const generalErrorResStruct = z.object({
     success: z.boolean(),
     message: z.string(),

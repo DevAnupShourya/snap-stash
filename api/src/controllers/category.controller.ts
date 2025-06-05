@@ -4,7 +4,12 @@ import { HTTPException } from 'hono/http-exception';
 
 import { Types } from 'mongoose';
 import { CategoryModel } from '@/models/category.models.js';
-import { getCategoriesQuerySchema, updateCategorySchema, categoryParamsSchema, createCategorySchema } from '@/validators/category.validator.js';
+import {
+    getCategoriesQuerySchema,
+    updateCategorySchema,
+    categoryParamsSchema,
+    createCategorySchema
+} from '@/validators/category.validator.js';
 import { genApiResponse } from '@/utils/helper.js';
 
 const categoryServer = new Hono()
