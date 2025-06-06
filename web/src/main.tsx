@@ -16,6 +16,8 @@ declare module '@tanstack/react-router' {
 // import { Provider } from "./provider.tsx";
 import "@/styles/globals.css";
 import { ToastProvider } from "@heroui/toast";
+import { AuthProvider } from "@/context/auth";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -28,10 +30,12 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     {/* <Provider> */}
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider placement='bottom-center' />
-      <RouterProvider router={router} />
-    </QueryClientProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider placement='bottom-center' />
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </AuthProvider>
     {/* </Provider> */}
   </React.StrictMode>,
 );

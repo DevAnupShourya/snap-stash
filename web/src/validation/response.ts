@@ -31,6 +31,14 @@ function createApiResponseSchema<T extends z.ZodTypeAny>(dataSchema: T) {
     });
 }
 
+// * `/auth`
+const registerRes = createApiResponseSchema(
+    z.object({
+        sessionId: z.string(),
+        expiresAt: z.string(),
+    })
+);
+
 // * `/category`
 const getCategories = createApiResponseSchema(
     z.object({
@@ -115,3 +123,5 @@ export type DeleteTaskType = z.infer<typeof deleteTask>;
 export type ToggleTaskStatusType = z.infer<typeof toggleTaskStatus>;
 
 export type GeneralErrorResponseType = z.infer<typeof generalErrorResStruct>;
+export type RegisterResType = z.infer<typeof registerRes>;
+export type GeneralResType = z.infer<typeof generalResStruct>;

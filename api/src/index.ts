@@ -7,36 +7,54 @@ import 'dotenv/config';
 import { ENV } from '@/utils/env.js'
 import taskServer from '@/controllers/task.controller.js';
 import categoryServer from '@/controllers/category.controller.js';
+import { authServer, requireAuth } from '@/controllers/auth.controller.js';
 import { connectDB } from '@/lib/db.js';
 
 const app = new Hono();
 const PORT = Number(ENV.SERVER_PORT) || 3001;
 
-// app.use('*', logger());
-app.use('*', logger((info) => {
-  const timestamp = new Date().toLocaleTimeString();
-  console.log(`[${timestamp}] : ${info}`)
-}))
+app
+  .use('*', logger((info) => {
+    const timestamp = new Date().toLocaleTimeString();
+    console.log(`[${timestamp}] : ${info}`)
+  }))
+  .use('*', cors({
+    origin: (origin) => {
+      // * Allow these origins
+      const allowedOrigins = [
+        'http://localhost:5173',  // Vite dev server
+        'http://localhost:3000',  // React dev server
+        'http://localhost:4173',  // Vite preview
+        'https://snapstash.vercel.app', // Production domain
+      ];
 
-app.use('*', cors());
+      return allowedOrigins.includes(origin || '') ? origin : null;
+    },
+    credentials: true,
+    allowHeaders: ['Content-Type', 'Authorization'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  }))
+  .use('/api/category/*', requireAuth)
+  .use('/api/task/*', requireAuth)
 
-app.get('/api/status', (c) => {
-  return c.text('All OK. API Running + Database Connected.', 200)
-});
+  .get('/api/status', (c) => {
+    return c.text('All OK. API Running + Database Connected.', 200)
+  })
 
-app.route('/api/category', categoryServer);
-app.route('/api/task', taskServer);
+  .route('/api/auth', authServer)
+  .route('/api/category', categoryServer)
+  .route('/api/task', taskServer)
 
-app.notFound((c) => {
-  return c.text(`404! This url(\`${c.req.path}\`) not found`, 404)
-})
+  .notFound((c) => {
+    return c.text(`404! This url(\`${c.req.path}\`) not found`, 404)
+  })
 
-app.onError((err, c) => {
-  console.error(`Error on \`${c.req.path}\` : `)
-  console.error(err);
+  .onError((err, c) => {
+    console.error(`Error on \`${c.req.path}\` : `)
+    console.error(err);
 
-  return c.text(`Error! Something wen wrong on url(\`${c.req.path}\`)....`, 500)
-})
+    return c.text(`Error! Something wen wrong on url(\`${c.req.path}\`)....`, 500)
+  })
 
 let dbConnection = await connectDB();
 serve({

@@ -1,14 +1,29 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 
-import { Link as LinkComp } from "@heroui/react";
-import Navbar  from "@/components/navbar";
+import { addToast, Link as LinkComp } from "@heroui/react";
+import Navbar from "@/components/navbar";
+import { useAuthContext } from "@/context/auth";
 
 export const Route = createRootRoute({
   component: RootLayout
 });
 
 export default function RootLayout() {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuthContext();
+
+  if (!isAuthenticated) {
+    navigate({ to: '/' });
+    
+    addToast({
+      variant: 'solid',
+      color: 'danger',
+      title: 'Unauthorized Access',
+      description: 'Kindly Login with correct credentials!!'
+    })
+  }
+
   return (
     <div className="relative flex flex-col h-screen container mx-auto max-w-7xl custom-font">
       <Navbar />

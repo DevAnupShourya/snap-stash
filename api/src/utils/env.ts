@@ -1,4 +1,3 @@
-// TODO : might use zod later
 function getEnv(name: string): string {
     const value = process.env[name];
     if (!value) {
@@ -10,4 +9,5 @@ function getEnv(name: string): string {
 export const ENV = {
     SERVER_PORT: parseInt(getEnv("SERVER_PORT")),
     MONGO_URI: getEnv("MONGO_URI"),
+    PIN: parseInt(getEnv("AUTH_PIN")),
 };
