@@ -4,25 +4,27 @@ import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { addToast, Link as LinkComp } from "@heroui/react";
 import Navbar from "@/components/navbar";
 import { useAuthContext } from "@/context/auth";
+import { useEffect } from "react";
 
 export const Route = createRootRoute({
   component: RootLayout
 });
 
 export default function RootLayout() {
-  const navigate = useNavigate();
   const { isAuthenticated } = useAuthContext();
+  const navigate = useNavigate();
 
-  if (!isAuthenticated) {
-    navigate({ to: '/' });
-    
-    addToast({
-      variant: 'solid',
-      color: 'danger',
-      title: 'Unauthorized Access',
-      description: 'Kindly Login with correct credentials!!'
-    })
-  }
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate({ to: '/' });
+      addToast({
+        variant: 'solid',
+        color: 'danger',
+        title: 'Unauthorized Access',
+        description: 'Kindly Login with correct credentials!!'
+      });
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="relative flex flex-col h-screen container mx-auto max-w-7xl custom-font">

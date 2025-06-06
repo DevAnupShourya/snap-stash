@@ -7,7 +7,7 @@ interface ViteTypeOptions {
   }
   
   interface ImportMetaEnv {
-    readonly VITE_PIN: string
+    // readonly VITE_PIN: string
     // more env variables...
   }
   
