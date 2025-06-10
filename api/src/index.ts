@@ -23,9 +23,7 @@ app
       // * Allow these origins
       const allowedOrigins = [
         'http://localhost:5173',  // Vite dev server
-        'http://localhost:3000',  // React dev server
-        'http://localhost:4173',  // Vite preview
-        'https://snapstash.vercel.app', // Production domain
+        'https://snap-stash-swart.vercel.app/', // Production domain
       ];
 
       return allowedOrigins.includes(origin || '') ? origin : null;
