@@ -88,7 +88,7 @@ export const authServer = new Hono()
                     path: '/'
                 });
 
-                console.log('One user authorized with id : ', sessionId)
+                console.log(sessions.size, ' user(s) authorized with id : ', sessionId)
 
                 return c.json(genApiResponse('Successfully authorized you', {
                     sessionId,
