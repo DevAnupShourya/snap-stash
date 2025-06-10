@@ -83,7 +83,7 @@ export const authServer = new Hono()
                 setCookie(c, 'auth_session', sessionId, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
+                    sameSite: 'none',
                     maxAge: SESSION_DURATION / 1000,
                     path: '/'
                 });
