@@ -23,14 +23,14 @@ app
       // * Allow these origins
       const allowedOrigins = [
         'http://localhost:5173',  // Vite dev server
-        'https://snap-stash-swart.vercel.app/', // Production domain
+        'https://snap-stash-swart.vercel.app', // Production domain
       ];
 
       return allowedOrigins.includes(origin || '') ? origin : null;
     },
     credentials: true,
     allowHeaders: ['Content-Type', 'Authorization'],
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   }))
   .use('/api/category/*', requireAuth)
   .use('/api/task/*', requireAuth)
