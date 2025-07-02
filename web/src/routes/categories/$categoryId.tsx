@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { createFileRoute, useNavigate, useParams, useRouter, useSearch } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, useParams, useSearch } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query';
 
 import {
@@ -38,7 +38,6 @@ function RouteComponent() {
   const [isNewTaskCreating, setIsNewTaskCreating] = useState(false)
 
   const navigate = useNavigate();
-  const router = useRouter();
   const { isVisible, scrollableRef, scrollToTop } = useBackToTop();
 
   const { sortBy, sortOrder } = useSearch({ from: '/categories/$categoryId' });
