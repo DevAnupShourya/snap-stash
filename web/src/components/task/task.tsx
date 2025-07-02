@@ -209,7 +209,7 @@ export default function TaskComponent({ _id, categoryId, content, done, updatedA
 
                         </>
                     ) : (
-                        <main className="grid grid-cols-9 gap-2">
+                        <main className="w-full grid grid-cols-9 gap-2">
                             <div className="space-y-1 col-span-8">
 
                                 <h1 className="text-lg font-semibold tracking-wide">
