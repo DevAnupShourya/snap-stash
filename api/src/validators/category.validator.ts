@@ -5,14 +5,14 @@ export const createCategorySchema = z.object({
     name: z.string().min(1, 'Name is required').max(64, 'Name must be less than 64 characters'),
     description: z.string().optional(),
     icon: z.string().min(1, 'Icon is required'),
-    color: z.enum(['default', 'primary', 'secondary', 'warning', 'danger'],).default('default')
+    color: z.enum(["default", "secondary", "primary", "success", "warning", "danger"],).default('default')
 });
 
 export const updateCategorySchema = z.object({
     name: z.string().min(1, 'Name is required').max(64, 'Name must be less than 64 characters').optional(),
     description: z.string().optional(),
     icon: z.string().min(1, 'Icon is required').optional(),
-    color: z.enum(['default', 'primary', 'secondary', 'warning', 'danger'],).default('default')
+    color: z.enum(["default", "secondary", "primary", "success", "warning", "danger"],).default('default')
 });
 
 export const categoryParamsSchema = z.object({

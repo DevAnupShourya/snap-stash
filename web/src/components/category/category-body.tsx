@@ -80,8 +80,8 @@ export default function CategoryBody({ cId, formVisible, setFormVisible, scrolla
                 {(taskQuery.isLoading || taskQuery.isPending) && <LoadingContent />}
 
                 {!taskQuery.isLoading && taskQuery.isError && <SomethingWentWrong />}
-                
-                {!taskQuery.isLoading && taskQuery.isSuccess && (
+
+                {!taskQuery.isLoading && taskQuery.isSuccess && taskQuery.data.payload.tasks.length > 5 && (
                     <div className='grid place-items-center pt-8 pb-20 gap-4'>
                         <div className='flex flex-nowrap gap-2 justify-between items-center w-11/12'>
                             <Pagination

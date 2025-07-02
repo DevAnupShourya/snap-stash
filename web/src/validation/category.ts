@@ -24,7 +24,7 @@ export const categoryPaginationParamsSchema = z.object({
     limit: z.number().optional().default(10),
     search: z.string().optional().default(''),
     sortBy: z.enum(['name', 'createdAt', 'updatedAt', '']).optional().default(''),
-    sortOrder: z.enum(['asc', 'desc']).optional().default('asc'),
+    sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
 export const tasksPaginationParamsSchema = z.object({
@@ -32,7 +32,7 @@ export const tasksPaginationParamsSchema = z.object({
     limit: z.number().optional().default(10),
     search: z.string().optional().default(''),
     sortBy: z.enum(['content', 'done', 'createdAt', 'updatedAt', '']).optional().default(''),
-    sortOrder: z.enum(['asc', 'desc']).optional().default('asc'),
+    sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
 });
 
 export type Category = z.infer<typeof categorySchema>;

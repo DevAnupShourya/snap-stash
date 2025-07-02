@@ -12,6 +12,7 @@ import {
   addToast,
   Popover, PopoverTrigger, PopoverContent,
   CheckboxGroup, Checkbox,
+  Link,
 } from "@heroui/react";
 import { ArrowUpToLine, ChevronLeft, Search, Plus, X, ListFilterPlus, ArrowDown01, ArrowDown10 } from 'lucide-react';
 
@@ -90,11 +91,13 @@ function RouteComponent() {
             <div className='flex flex-nowrap gap-2 items-center w-full'>
               <Tooltip size='sm' content='Back'>
                 <Button
+                  as={Link}
                   variant='faded'
                   color='warning'
                   isIconOnly
                   size='sm'
-                  onPress={() => { router.history.back() }}
+                  // onPress={() => { router.history.back() }}
+                  href='/categories'
                 >
                   <ChevronLeft className='size-4 pointer-events-none flex-shrink-0 transition-transform' />
                 </Button>
